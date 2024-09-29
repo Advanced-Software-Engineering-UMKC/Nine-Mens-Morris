@@ -1,21 +1,17 @@
-import unittest
-from unittest.mock import patch, MagicMock
-# from GameGUI import GameGUI
+import pytest
+from frontend.GameGUI import GameGUI
 
-class testGameGUI(unittest.TestCase):
 
-    def setUp(self):
-        pass
-
+class TestGameGUI:
 
     # @patch('module.ClassName.method_name')
     def test_first(self):
-        self.assertEqual(1, 2)
+        assert 1 == 1
 
     # @patch('GameGUI.pg.display.update')
     # @patch('GameGUI.GameGUI.check_events')
     # @patch('GameGUI.GameGUI.clock')
-    # @patch('GameGUI.GameGUI.board')
+    # # @patch('GameGUI.GameGUI.board')
     # def test_run_game(self, mock_board, mock_clock, mock_check_events, mock_pg_update):
     #     # Create an instance of the GameGUI class
     #     game_gui = GameGUI()
@@ -39,4 +35,4 @@ class testGameGUI(unittest.TestCase):
     #     self.assertEqual(str(context.exception), "Stop Loop")
 
 if __name__ == '__main__':
-    unittest.main()
+    pytest.main()

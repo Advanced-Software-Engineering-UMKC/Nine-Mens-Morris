@@ -30,8 +30,8 @@ A virtual environment isolates project dependencies from your system's Python en
    ```
 **4. Run the program**
   ```bash
-   cd frontend
-   python GameGUI.py
+   pip install -e . 
+   startgame
    ```
 
 
@@ -39,15 +39,14 @@ A virtual environment isolates project dependencies from your system's Python en
 
 **1. Make sure the Python extension is installed**
 
-**2. Run unittest discovery command to discover and run all unit tests**
+**2. Run pytests discovery command to discover and run all unit tests**
   ```bash
-   python -m unittest discover
+   pytest tests/
   ```
 
 **3. Configure Testing in the sidebar**
- - Select to use `unittest`, not `pytest`
- - Select test naming option for `'test*.py'`
+ - Select to use `pytest`, not `unittest`
+ - Select test naming option for `'test_*.py'`
 
-**3. When writing new tests always put 'test' at the front of every file name, class name, test method name**
- - This is how unittest will find the test
- - Dont capitalize the first letter
+**3. When writing new tests always put 'test_' at the front of every file name and test method name**
+ - This is how pytest will find the test

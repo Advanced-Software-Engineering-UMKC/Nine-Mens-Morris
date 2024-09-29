@@ -1,6 +1,6 @@
 import pygame as pg
 import sys
-from BoardGUI import BoardGUI 
+from frontend.BoardGUI import BoardGUI 
 
 WIN_SIZE = 900
 
@@ -26,7 +26,10 @@ class GameGUI:
             pg.display.update()
             self.clock.tick(60)
             self.board.build_board()
-        
-if __name__ == '__main__':
+
+def main():
     game = GameGUI()
     game.run_game()
+        
+if __name__ == '__main__':
+    main()
