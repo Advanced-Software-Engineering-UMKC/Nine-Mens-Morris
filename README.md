@@ -30,5 +30,6 @@ A virtual environment isolates project dependencies from your system's Python en
    ```
 **4. Run the program**
   ```bash
-   python main.py
+   cd frontend
+   python GameGUI.py
    ```
