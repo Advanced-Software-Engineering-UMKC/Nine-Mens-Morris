@@ -35,7 +35,7 @@ class Board:
             reverse_diagonal_line = [(j, size - 1 - i + j) for j in range(size)]
             indices_array.append(reverse_diagonal_line)
 
-    return indices_array
+        return indices_array
 
 # Example usage:
 num_lines = 3
