@@ -1,4 +1,6 @@
-# Nine-Mens-Morris
+# Tic-Tac-Toe
+
+![example](resources/example.png)
 
 ## Running the Project
 
