@@ -33,3 +33,21 @@ A virtual environment isolates project dependencies from your system's Python en
    cd frontend
    python GameGUI.py
    ```
+
+
+## Running the tests in Visual Studio Code
+
+**1. Make sure the Python extension is installed**
+
+**2. Run unittest discovery command to discover and run all unit tests**
+  ```bash
+   python -m unittest discover
+  ```
+
+**3. Configure Testing in the sidebar**
+ - Select to use `unittest`, not `pytest`
+ - Select test naming option for `'test*.py'`
+
+**3. When writing new tests always put 'test' at the front of every file name, class name, test method name**
+ - This is how unittest will find the test
+ - Dont capitalize the first letter
