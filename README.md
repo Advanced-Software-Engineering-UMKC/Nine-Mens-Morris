@@ -1,11 +1,34 @@
 # Nine-Mens-Morris
 
-## Instructions to run
-1. Create virtual environment in project
- - In terminal window with project location opened 
- - - python -m venv venv
- - - (on windows) venv/Scripts/activate
- - - (on mac) source venv/bin/activate
- - - (install dependencies) pip install -r requirements.txt
- 2. run the program
-  - python main.py
+## Running the Project
+
+**1. Create a Virtual Environment (Recommended but not necessary):**
+
+A virtual environment isolates project dependencies from your system's Python environment, preventing conflicts.
+
+**Steps:**
+
+- **Open a terminal window.** I opened a terminal in my IDE
+- **Navigate to the project directory.** 
+- **Create a virtual environment named `venv`:**
+```bash
+   python -m venv venv
+   ```
+
+**2. Activate virtual Environment**
+  - On windows
+  ```bash
+   venv/Scripts/activate
+   ```
+  - On Mac
+  ```bash
+   source venv/bin/activate
+   ```
+**3. Install dependencies**
+  ```bash
+   pip install -r requirements.txt
+   ```
+**4. Run the program**
+  ```bash
+   python main.py
+   ```
