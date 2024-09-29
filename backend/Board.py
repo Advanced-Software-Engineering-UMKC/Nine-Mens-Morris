@@ -1,43 +1,40 @@
+import pygame as pg
+from backend.Cell import Cell, CellType
+
 class Board:
     def __init__(self, size):
-        self.game_over = False
-        self.won = False
-
-    def add_tile(self):
-        pass
+        self.create_initial_board(size)
+        
                        
-    def create_board_indices_array(size):
-        # """
-        # Creates an array of indices representing lines in a grid.
-
-        # Args:
-        #     num_lines: The number of lines in the grid.
-
-        # Returns:
-        #     A 2D array of tuples representing the indices for each line.
-        # """
-
+    def create_initial_board(self, size):
         indices_array = []
         for i in range(size):
-            # Create horizontal lines
             horizontal_line = [(i, j) for j in range(size)]
             indices_array.append(horizontal_line)
 
-            # Create vertical lines
-            vertical_line = [(j, i) for j in range(size)]
-            indices_array.append(vertical_line)
+        # create 2D array of Cell objects
+        self.board = [[Cell(i, j) for j in range(size)] for i in range(size)]
 
-            # Create diagonal lines (top-left to bottom-right)
-            diagonal_line = [(j, i + j) for j in range(size)]
-            indices_array.append(diagonal_line)
+        print(self.board)
 
-            # Create diagonal lines (top-right to bottom-left)
-            reverse_diagonal_line = [(j, size - 1 - i + j) for j in range(size)]
-            indices_array.append(reverse_diagonal_line)
+        return self.board
+    
+    def get_valid_moves(row):
+        rowMoves = []
+        middle = len(row - 1) // 2
+        if row == middle:
+            for cell in row:
+                if cell != middle:
+                    rowMoves.append(cell)
+        else:
+            dist = abs(row - middle)
+            for i in range(3):
+                offset = (i - 1) * dist
+                rowMoves.append(offset + middle)
+        return rowMoves
 
-        return indices_array
-
-# Example usage:
-num_lines = 3
-line_indices_array = create_line_indices_array(num_lines)
-print(line_indices_array)
+    def set_valid_cells_to_empty(self):
+        for row in self.board:
+            validMoves = self.get_valid_moves(row)
+            for cell in validMoves:
+                self.board[row][cell].setState(CellType.EMPTY)

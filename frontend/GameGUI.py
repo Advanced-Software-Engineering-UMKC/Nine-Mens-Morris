@@ -11,7 +11,9 @@ class GameGUI:
         self.clock = pg.time.Clock()
         # window title
         pg.display.set_caption('Nine-Mens-Morris')
-        self.board = BoardGUI(self, WIN_SIZE)
+        self.board_size = 7
+        self.board = BoardGUI(self, WIN_SIZE, self.board_size)
+        
 
     def check_events(self):
         # check for exit event and properly exit game
@@ -26,6 +28,7 @@ class GameGUI:
             pg.display.update()
             self.clock.tick(60)
             self.board.build_board()
+            self.board.getCellClicked()
 
 def main():
     game = GameGUI()
