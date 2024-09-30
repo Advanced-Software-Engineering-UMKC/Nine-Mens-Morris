@@ -41,6 +41,10 @@ A virtual environment isolates project dependencies from your system's Python en
    ```
    - Run both of these commands at top project directory
 
+#### Additonal notes:
+- The app entry point is `backend/GameGUI.main`
+  - The `setup.py` file defines this 
+
 
 ## Running the tests in Visual Studio Code
 
