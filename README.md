@@ -34,7 +34,9 @@ A virtual environment isolates project dependencies from your system's Python en
    ```
 **4. Run the program**
   ```bash
-   pip install -e . 
+   pip install -e .
+  ```
+  ```bash
    startgame
    ```
    - Run both of these commands at top project directory
