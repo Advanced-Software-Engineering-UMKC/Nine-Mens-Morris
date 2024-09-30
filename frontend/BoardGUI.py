@@ -1,5 +1,6 @@
 import pygame as pg
 from backend.Board import Board
+import backend.Cell as CellType
 
 vec2 = pg.math.Vector2
 
@@ -34,10 +35,12 @@ class BoardGUI:
         current_cell = vec2(pg.mouse.get_pos()) // self.cell_size
         col, row = map(int, current_cell)
         left_click = pg.mouse.get_pressed()[0]
-        # if left_click and self.
-        print(left_click)
-        # mouse_pos = pg.mouse.get_pos()
-        # col, row = mouse_pos[0] // self.cell_size, mouse_pos[1] // self.cell_size
-        # print(col, row)
+        if left_click:
+            print(self.board.board[row][col].state)
+        # if left_click and self.board[row][col].state == CellType.EMPTY:
+            # self.board.board[row][col].setState(CellType.BLACK)
+        #     print(row, col)
+        #     print(self.board.board[row][col].state)
+
         return current_cell
         # return col, row
