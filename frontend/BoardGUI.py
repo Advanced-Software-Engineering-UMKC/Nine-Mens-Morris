@@ -34,7 +34,7 @@ class BoardGUI:
         current_cell = vec2(pg.mouse.get_pos()) // self.cell_size
         col, row = map(int, current_cell)
         left_click = pg.mouse.get_pressed()[0]
-        if left_click and self.
+        # if left_click and self.
         print(left_click)
         # mouse_pos = pg.mouse.get_pos()
         # col, row = mouse_pos[0] // self.cell_size, mouse_pos[1] // self.cell_size

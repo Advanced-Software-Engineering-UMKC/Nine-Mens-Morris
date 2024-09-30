@@ -13,7 +13,7 @@ class Board:
             indices_array.append(horizontal_line)
 
         # create 2D array of Cell objects
-        self.board = [[Cell(i, j) for j in range(size)] for i in range(size)]
+        self.board = [[Cell() for j in range(size)] for i in range(size)]
 
         print(self.board)
 
