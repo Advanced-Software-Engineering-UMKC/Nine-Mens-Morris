@@ -2,7 +2,7 @@ import pygame as pg
 import sys
 from frontend.BoardGUI import BoardGUI 
 
-WIN_SIZE = 900
+WIN_SIZE = 500
 
 class GameGUI:
     def __init__(self):
@@ -23,12 +23,13 @@ class GameGUI:
                 sys.exit()
 
     def run_game(self):
+        self.board.build_board() #does this need to be called constantly?
+    
         while True:
             self.check_events()
             pg.display.update()
             self.clock.tick(60)
-            self.board.build_board()
-            self.board.getCellClicked()
+            self.board.get_cell_clicked() #this runs too much. reduce or face errors
 
 def main():
     game = GameGUI()
