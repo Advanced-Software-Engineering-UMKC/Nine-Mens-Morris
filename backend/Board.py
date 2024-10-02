@@ -17,6 +17,7 @@ class Board:
         self.board = [[Cell() for j in range(size)] for i in range(size)]
         
         # set the state of the cells to EMPTY
+        self.valid_moves = []
         self.set_valid_cells_to_empty()
         # print(self.board)
 
