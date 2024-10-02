@@ -10,10 +10,10 @@ class Cell:
     def __init__(self):
         self.state = CellType.VOID
 
-    def getState(self):
+    def get_state(self):
         return self.state
     
-    def setState(self, state):
+    def set_state(self, state):
         self.state = state
 
     

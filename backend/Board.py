@@ -1,4 +1,4 @@
-import pygame as pg
+# import pygame as pg
 from backend.Cell import Cell, CellType
 
 class Board:
@@ -17,12 +17,14 @@ class Board:
         self.board = [[Cell() for j in range(size)] for i in range(size)]
         
         # set the state of the cells to EMPTY
+        self.valid_moves = []
         self.set_valid_cells_to_empty()
         # print(self.board)
 
         return self.board
     
-    def get_valid_moves(self, row):
+    #is this valid movement for 6, 9, and 12?
+    def init_valid_moves(self, row):
         rowMoves = []
         middle = (self.board_size - 1) // 2
         if row == middle:
@@ -40,6 +42,21 @@ class Board:
 
     def set_valid_cells_to_empty(self):
         for index, row in enumerate(self.board):
-            validMoves = self.get_valid_moves(index)
-            for cell in validMoves:
-                self.board[index][cell].setState(CellType.EMPTY)
+            valid = self.init_valid_moves(index)
+            for cell in valid:
+                self.board[index][cell].set_state(CellType.EMPTY)
+                self.valid_moves.append((index, cell))
+    
+    def get_valid_moves(self):
+        return self.valid_moves
+    
+    def check_position(self, row, column):
+        state = self.board[row][column].get_state()
+        return str(state.name).lower()
+    
+    def set_position(self, row, column, color):
+        if color == "white":
+            self.board[row][column].set_state(CellType.WHITE)
+        else:
+            self.board[row][column].set_state(CellType.BLACK)
+        return 1
