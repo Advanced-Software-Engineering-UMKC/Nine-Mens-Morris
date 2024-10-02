@@ -51,16 +51,12 @@ class Board:
         return self.valid_moves
     
     def check_position(self, row, column):
-        return self.board[row][column].get_state()
+        state = self.board[row][column].get_state()
+        return str(state.name).lower()
     
     def set_position(self, row, column, color):
-        if self.check_position(row, column) != CellType.EMPTY:
-            return "BoardError -- position not empty"
-        
-        if 'white' in color:
+        if color == "white":
             self.board[row][column].set_state(CellType.WHITE)
-        elif 'black' in color:
-            self.board[row][column].set_state(CellType.BLACK)
         else:
-            return "BoardError -- color invalid"
+            self.board[row][column].set_state(CellType.BLACK)
         return 1

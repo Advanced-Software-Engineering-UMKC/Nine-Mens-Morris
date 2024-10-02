@@ -39,12 +39,16 @@ class BoardGUI:
         left_click = pg.mouse.get_pressed()[0]
         if left_click:
             # print(self.backend_game.get_board(row,col), self.count)
-            x = self.backend_game.piece_placement(row, col)
-            # print(x, "\n")
-            if x == 1:
-                self.draw_piece(self.backend_game.get_turn(),current_cell * self.cell_size)
-                self.backend_game.end_turn()
             self.count += 1
+
+            if not self.backend_game.placement_complete():
+                x = self.backend_game.piece_placement(row, col)
+                # print(x, "\n")
+                if x == 1:
+                    self.draw_piece(self.backend_game.get_turn(),current_cell * self.cell_size)
+                    self.backend_game.end_turn()
+            else:
+                print("Movement")
         # if left_click and self.board[row][col].state == CellType.EMPTY:
             # self.board.board[row][col].setState(CellType.BLACK)
         #     print(row, col)

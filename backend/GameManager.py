@@ -21,22 +21,25 @@ class GameManager:
             return 'white'
         else:
             return 'black'
+    
+    def placement_complete(self):
+        return self.pieces.all_pieces_placed()
 
     def piece_placement(self, row, column):
         if (row, column) in self.current_moves:
-            flag_board = 0
-            flag_piece = 0
+            if self.board.check_position(row, column) != "empty":
+                print(self.board.check_position(row, column).lower())
+                return "GameManagerError -- position not empty"
+            
+            flag = 0
             if self.turn == Turn.WHITE:
-                flag_piece = self.pieces.set_white_piece(row, column)
-                if flag_piece == 1:
-                    flag_board = self.board.set_position(row, column, 'white')
+                flag = self.pieces.set_white_piece(row, column)
             else:
-                flag_piece = self.pieces.set_black_piece(row, column)
-                if flag_piece == 1:
-                    flag_board = self.board.set_position(row, column, 'black')
+                flag = self.pieces.set_black_piece(row, column)
 
 
-            if flag_board == 1 and flag_piece == 1:
+            if flag == 1:
+                self.board.set_position(row, column, self.turn.name.lower())
                 self.current_moves.remove((row, column))
                 return 1
             #else error -- figure out handling. are we making error classes?
