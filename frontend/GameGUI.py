@@ -12,7 +12,8 @@ class GameGUI:
         # window title
         pg.display.set_caption('Nine-Mens-Morris')
         self.board_size = 7
-        self.board = BoardGUI(self, WIN_SIZE, self.board_size)
+        self.total_pieces = 9
+        self.board = BoardGUI(self, WIN_SIZE, self.board_size, self.total_pieces)
         
 
     def check_events(self):

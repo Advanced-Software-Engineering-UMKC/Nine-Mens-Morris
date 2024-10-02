@@ -54,10 +54,13 @@ class Board:
         return self.board[row][column].get_state()
     
     def set_position(self, row, column, color):
+        if self.check_position(row, column) != CellType.EMPTY:
+            return "BoardError -- position not empty"
+        
         if 'white' in color:
             self.board[row][column].set_state(CellType.WHITE)
         elif 'black' in color:
             self.board[row][column].set_state(CellType.BLACK)
         else:
-            return 0
+            return "BoardError -- color invalid"
         return 1
