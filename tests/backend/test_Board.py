@@ -41,6 +41,7 @@ class TestBoard:
 
 
     def test_set_position(self, board):
+        # Test if set_position updates to desired state
         board.set_position(0, 0, "white")
         state = board.check_position(0, 0)
         assert state == "white"
