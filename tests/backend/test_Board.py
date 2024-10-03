@@ -46,7 +46,6 @@ class TestBoard:
         assert state == "white"
 
 
-'''
     def test_create_board_indices_array(self, board):
         """Test if create_board_indices_array method works correctly."""
         num_lines = 7
@@ -60,4 +59,3 @@ class TestBoard:
                 assert isinstance(cell, Cell.Cell)
             assert len(line) == num_lines
         assert len(board_of_cells) == num_lines
-'''
