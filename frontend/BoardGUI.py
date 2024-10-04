@@ -14,7 +14,7 @@ class BoardGUI:
         self.white_piece_image = self.get_scaled_image('resources/pieces/white_piece.png', [self.cell_size] * 2)
         # self.board = Board(board_size)
         self.backend_game = GameManager(board_size, total_pieces)
-        self.count = 0
+        # self.count = 0
 
     def draw_board(self):
         self.game.screen.blit(self.board_image, (0, 0))
@@ -39,12 +39,12 @@ class BoardGUI:
         left_click = pg.mouse.get_pressed()[0]
         if left_click:
             # print(self.backend_game.get_board(row,col), self.count)
-            self.count += 1
+            # self.count += 1
 
             if not self.backend_game.placement_complete():
-                x = self.backend_game.piece_placement(row, col)
+                flag = self.backend_game.piece_placement(row, col)
                 # print(x, "\n")
-                if x == 1:
+                if flag == 1:
                     self.draw_piece(self.backend_game.get_turn(),current_cell * self.cell_size)
                     self.backend_game.end_turn()
             else:
