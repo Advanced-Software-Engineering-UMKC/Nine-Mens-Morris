@@ -34,26 +34,45 @@ class BoardGUI:
         else:
             self.game.screen.blit(self.white_piece_image, position)
 
+    # def get_cell_clicked(self):
+    #     current_cell = vec2(pg.mouse.get_pos()) // self.cell_size
+    #     col, row = map(int, current_cell)
+    #     left_click = pg.mouse.get_pressed()[0]
+    #     if left_click:
+    #         # print(self.backend_game.get_board(row,col), self.count)
+    #         self.count += 1
+
+    #         if not self.backend_game.placement_complete():
+    #             x = self.backend_game.piece_placement(row, col)
+    #             # print(x, "\n")
+    #             if x == 1:
+    #                 self.draw_piece(self.backend_game.get_turn(),current_cell * self.cell_size)
+    #                 self.backend_game.end_turn()
+    #         else:
+    #             print("Movement")
+    #     # if left_click and self.board[row][col].state == CellType.EMPTY:
+    #         # self.board.board[row][col].setState(CellType.BLACK)
+    #     #     print(row, col)
+    #     #     print(self.board.board[row][col].state)
+
+    #     return current_cell
+    #     # return col, row
     def get_cell_clicked(self):
         current_cell = vec2(pg.mouse.get_pos()) // self.cell_size
         col, row = map(int, current_cell)
-        left_click = pg.mouse.get_pressed()[0]
-        if left_click:
-            # print(self.backend_game.get_board(row,col), self.count)
-            self.count += 1
+        mouse_buttons = pg.mouse.get_pressed()  # Call this once and store the result
 
+        if mouse_buttons[0]:  # Left click
+            self.count += 1
             if not self.backend_game.placement_complete():
                 x = self.backend_game.piece_placement(row, col)
-                # print(x, "\n")
                 if x == 1:
-                    self.draw_piece(self.backend_game.get_turn(),current_cell * self.cell_size)
+                    self.draw_piece(self.backend_game.get_turn(), current_cell * self.cell_size)
                     self.backend_game.end_turn()
-            else:
-                print("Movement")
-        # if left_click and self.board[row][col].state == CellType.EMPTY:
-            # self.board.board[row][col].setState(CellType.BLACK)
-        #     print(row, col)
-        #     print(self.board.board[row][col].state)
+            return current_cell  # Return the current cell for left click
 
-        return current_cell
-        # return col, row
+        if mouse_buttons[2]:  # Right click
+            return None  # Return None on right click
+
+        return None  # Return None if no click
+
