@@ -17,6 +17,7 @@ class BoardGUI:
         self.count = 0
         self.win_size = WIN_SIZE
 
+
     def draw_board(self):
         self.game.screen.blit(self.board_image, (0, 0))
 
