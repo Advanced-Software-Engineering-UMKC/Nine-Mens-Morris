@@ -1,5 +1,5 @@
 import pygame as pg
-# from backend.Board import Board
+from backend.Board import Board
 from backend.GameManager import GameManager
 # import backend.Cell as CellType
 
@@ -12,9 +12,10 @@ class BoardGUI:
         self.cell_size = WIN_SIZE // board_size
         self.black_piece_image = self.get_scaled_image('resources/pieces/black_piece.png', [self.cell_size] * 2)
         self.white_piece_image = self.get_scaled_image('resources/pieces/white_piece.png', [self.cell_size] * 2)
-        # self.board = Board(board_size)
+        self.board = Board(board_size)
         self.backend_game = GameManager(board_size, total_pieces)
         self.count = 0
+        self.win_size = WIN_SIZE
 
     def draw_board(self):
         self.game.screen.blit(self.board_image, (0, 0))
