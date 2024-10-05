@@ -24,7 +24,7 @@ class GameGUI:
                 sys.exit()
 
     def run_game(self):
-        self.board.build_board() #does this need to be called constantly?
+        self.board.build_board()
     
         while True:
             self.check_events()

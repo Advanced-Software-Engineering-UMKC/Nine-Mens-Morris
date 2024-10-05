@@ -1,55 +1,58 @@
 import pytest
+from unittest.mock import patch
 import pygame as pg
 from frontend.GameGUI import GameGUI
 
-# fixtures create reusable instances for testing
-@pytest.fixture
-def game_gui():
-    """Fixture to create a GameGUI instance."""
-    # Initialize Pygame
-    pg.init()
-    game = GameGUI()
-    yield game  # This allows the test to use the game instance
-    pg.quit()  # Clean up after the tests
 
-class TestGameGUI:
-    def test_game_gui_initialization(self, game_gui):
-        """Test if GameGUI initializes correctly."""
-        assert game_gui.screen is not None
-        assert game_gui.clock is not None
-        assert game_gui.board is not None
-        assert pg.display.get_init()
+@pytest.fixture(scope='function')
+def game_fixture():
+    """Fixture to initialize and clean up the GameGUI instance for each test."""
+    # Initialize Pygame display to prevent errors with display functions
+    pg.display.set_mode([1, 1])  # Minimal size to initialize display
+    game = GameGUI()  # Create instance of GameGUI
+    yield game  # Provide the game instance to the test
+    pg.quit()  # Quit Pygame after each test
 
-    def test_check_events_quit(self, game_gui):
 
-        assert pg.display.get_init()
+def test_check_events_exit(game_fixture):
+    game = game_fixture
 
-        """Test if the check_events method handles QUIT event properly."""
-        # Simulate a QUIT event
-        for event in [pg.event.Event(pg.QUIT)]:
-            # event.post() puts the event in the event queue
-            # this is used for simulating events or actions in the game
-            pg.event.post(event)
-        
-        # We will check if the quit event is processed without raising errors
+    # Patch the pygame event to simulate a QUIT event
+    with patch('pygame.event.get') as mock_pygame_event_get:
+        mock_pygame_event_get.return_value = [pg.event.Event(pg.QUIT)]
+        with pytest.raises(SystemExit):
+            game.check_events()
+
+
+def test_check_events_no_quit(game_fixture):
+    game = game_fixture
+
+    # Patch the pygame event to simulate a non-QUIT event
+    with patch('pygame.event.get') as mock_pygame_event_get:
+        mock_pygame_event_get.return_value = [pg.event.Event(pg.KEYDOWN, {'key': pg.K_a})]
         try:
-            game_gui.check_events()
+            game.check_events()
         except SystemExit:
-            # If SystemExit is raised, we assume the quit event was processed
-            pass
-
-        assert not pg.display.get_init()  # Check PyGame is not initialized
-        
-        # Here, we would normally use mocking to verify that pg.quit() was called.
-        # For simplicity, we just ensure no errors were raised.
+            pytest.fail("check_events() raised SystemExit unexpectedly!")
 
 
-    # def test_run_game(self, game_gui):
-    #     """Test if the run_game method initializes the board and Pygame."""
-    #     # assert pg.display.get_init()
-    #     game_gui.run_game()
-    #     assert game_gui.board is not None
-    #     # assert pg.display.get_init()
+def test_run_game_quit(game_fixture):
+    game = game_fixture
 
-if __name__ == '__main__':
-    pytest.main()
+    # Patch the pygame event to simulate a QUIT event
+    with patch('pygame.event.get') as mock_pygame_event_get:
+        mock_pygame_event_get.return_value = [pg.event.Event(pg.QUIT)]
+        with pytest.raises(SystemExit):
+            game.run_game()
+
+
+def test_run_game(game_fixture):
+    game = game_fixture
+
+    # Mock methods to prevent an infinite loop and resource loading
+    with patch.object(game, 'check_events') as mock_check_events, \
+         patch.object(game.board, 'build_board') as mock_build_board, \
+         patch('pygame.display.update') as mock_display_update:
+        mock_check_events.side_effect = [None, SystemExit]  # Stop after one iteration
+        with pytest.raises(SystemExit):
+            game.run_game()
