@@ -6,14 +6,14 @@ from backend.GameManager import GameManager
 vec2 = pg.math.Vector2
 
 class BoardGUI:
-    def __init__(self, game, WIN_SIZE, board_size, total_pieces):
+    def __init__(self, game, WIN_SIZE, board_size, total_pieces, gameManager):
         self.game = game
         self.board_image = self.get_scaled_image('resources/board/board.png', [WIN_SIZE] * 2)
         self.cell_size = WIN_SIZE // board_size
         self.black_piece_image = self.get_scaled_image('resources/pieces/black_piece.png', [self.cell_size] * 2)
         self.white_piece_image = self.get_scaled_image('resources/pieces/white_piece.png', [self.cell_size] * 2)
         # self.board = Board(board_size)
-        self.backend_game = GameManager(board_size, total_pieces)
+        self.backend_game = gameManager
         # self.count = 0
 
     def draw_board(self):

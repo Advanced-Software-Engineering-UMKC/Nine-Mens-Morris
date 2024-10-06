@@ -31,14 +31,14 @@ class GameManager:
                 print(self.board.check_position(row, column).lower())
                 return "GameManagerError -- position not empty"
             
-            flag = 0
+            isPiecePlaced = 0
             if self.turn == Turn.WHITE:
-                flag = self.pieces.set_white_piece(row, column)
+                isPiecePlaced = self.pieces.set_white_piece(row, column)
             else:
-                flag = self.pieces.set_black_piece(row, column)
+                isPiecePlaced = self.pieces.set_black_piece(row, column)
 
 
-            if flag == 1:
+            if isPiecePlaced == 1:
                 self.board.set_position(row, column, self.turn.name.lower())
                 self.current_moves.remove((row, column))
                 return 1
@@ -47,6 +47,11 @@ class GameManager:
 
         else:
             return "GameManagerError -- invalid piece placement position"
+        
+    # function for getting the current amount of pieces left to be placed
+    def get_pieces_left(self):
+        # dictionary for black and white pieces left to be placed
+        return {"white": self.pieces.size - self.pieces.count_white_placed, "black": self.pieces.size - self.pieces.count_black_placed}
     
     def end_turn(self):
         self.turn = Turn.swap_turn(self.turn)
