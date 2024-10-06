@@ -94,8 +94,8 @@ class TestPiecePlacement:
         board_class_instance, board_size, game_manager = setup_board
 
         # When all pieces have been placed
-        for i in range(9):
-            game_manager.place_piece(i, i)
+        for i in board_class_instance.get_valid_moves():
+            game_manager.place_piece(i[0], i[1])
             game_manager.end_turn()
 
         # Then an error message is returned

@@ -27,7 +27,7 @@ def board_gui_fixture():
 def test_initialization(board_gui_fixture):
     board_gui, _ = board_gui_fixture
     assert board_gui.cell_size == board_gui.win_size // board_gui.board.board_size
-    assert isinstance(board_gui.backend_game, GameManager)
+    assert isinstance(board_gui.game_manager, GameManager)
     assert board_gui.count == 0
     
   
@@ -42,7 +42,7 @@ def test_initialization(board_gui_fixture):
     assert isinstance(board_gui.board, Board)
     assert board_gui.board.board_size == 8 # hardecoded above
 
-    assert isinstance(board_gui.backend_game, GameManager)
+    assert isinstance(board_gui.game_manager, GameManager)
     
     assert board_gui.count == 0
 

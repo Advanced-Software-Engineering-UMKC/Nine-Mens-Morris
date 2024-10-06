@@ -20,6 +20,9 @@ class GameManager:
     def get_turn(self):
         return self.turn
     
+    def get_turn_as_string(self):
+        return self.turn.name.lower()
+    
     def placement_complete(self):
         return self.pieces.all_pieces_placed()
 

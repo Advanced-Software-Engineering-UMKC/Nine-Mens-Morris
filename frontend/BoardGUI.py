@@ -1,8 +1,7 @@
 import pygame as pg
 from backend.Board import Board
 from backend.GameManager import GameManager
-# import backend.Cell as CellType
-
+from backend.Piece import Turn
 vec2 = pg.math.Vector2
 
 class BoardGUI:
@@ -29,8 +28,8 @@ class BoardGUI:
     def build_board(self):
         self.draw_board()
 
-    def draw_piece(self, piece, position):
-        if piece == 'black':
+    def draw_piece(self, turn, position):
+        if turn == Turn.BLACK:
             self.game.screen.blit(self.black_piece_image, position)
         else:
             self.game.screen.blit(self.white_piece_image, position)
@@ -42,6 +41,7 @@ class BoardGUI:
 
         if mouse_buttons[0]:  # Left click
             self.count += 1
+            # This part should be moved to the GameManager, even the draw_piece call
             if not self.game_manager.placement_complete():
                 isPiecePlaced = self.game_manager.place_piece(row, col)
                 if isPiecePlaced == 1:

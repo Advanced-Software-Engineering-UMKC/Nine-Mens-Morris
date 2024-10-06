@@ -38,7 +38,7 @@ class GameGUI:
 
     def draw_info(self):
         font = pg.font.Font(None, 36)
-        turn_text = font.render(f"Turn: {self.gameManager.get_turn()}", True, (255, 255, 255))
+        turn_text = font.render(f"Turn: {self.gameManager.turn.name}", True, (255, 255, 255))
         white_pieces_text = font.render(f"White Pieces Left: {self.gameManager.get_pieces_left()['white']}", 
                                         True, (255, 255, 255))
         black_pieces_text = font.render(f"Black Pieces Left: {self.gameManager.get_pieces_left()['black']}", 
