@@ -18,8 +18,9 @@ def board_gui_fixture():
     board_size = 8
     win_size = 640
     total_pieces = 16
+    gameManager = GameManager(board_size, total_pieces)
     
-    board_gui = BoardGUI(mock_game, win_size, board_size, total_pieces)
+    board_gui = BoardGUI(mock_game, win_size, board_size, total_pieces, gameManager)
     return board_gui, mock_game
 
 

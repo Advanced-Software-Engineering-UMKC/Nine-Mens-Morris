@@ -52,7 +52,7 @@ class Board:
     
     def check_position(self, row, column):
         state = self.board[row][column].get_state()
-        return str(state.name).lower()
+        return state
     
     def set_position(self, row, column, color):
         if color == "white":

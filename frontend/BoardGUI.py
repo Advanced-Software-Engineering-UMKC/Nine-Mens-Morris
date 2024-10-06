@@ -12,7 +12,7 @@ class BoardGUI:
         self.cell_size = WIN_SIZE // board_size
         self.black_piece_image = self.get_scaled_image('resources/pieces/black_piece.png', [self.cell_size] * 2)
         self.white_piece_image = self.get_scaled_image('resources/pieces/white_piece.png', [self.cell_size] * 2)
-        self.backend_game = gameManager
+        self.game_manager = gameManager
         self.board = Board(board_size)
         self.count = 0
         self.win_size = WIN_SIZE
@@ -42,11 +42,11 @@ class BoardGUI:
 
         if mouse_buttons[0]:  # Left click
             self.count += 1
-            if not self.backend_game.placement_complete():
-                x = self.backend_game.piece_placement(row, col)
-                if x == 1:
-                    self.draw_piece(self.backend_game.get_turn(), current_cell * self.cell_size)
-                    self.backend_game.end_turn()
+            if not self.game_manager.placement_complete():
+                isPiecePlaced = self.game_manager.place_piece(row, col)
+                if isPiecePlaced == 1:
+                    self.draw_piece(self.game_manager.get_turn(), current_cell * self.cell_size)
+                    self.game_manager.end_turn()
             return current_cell  # Return the current cell for left click
 
         if mouse_buttons[2]:  # Right click

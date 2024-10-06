@@ -1,6 +1,7 @@
 # import pygame as pg
 from backend.Board import Board
 from backend.Piece import Pieces, Turn
+from backend.Cell import CellType
 
 class GameManager:
     def __init__(self, size, pieces):
@@ -17,18 +18,15 @@ class GameManager:
         return self.board.check_position(row, col)
 
     def get_turn(self):
-        if self.turn == Turn.WHITE:
-            return 'white'
-        else:
-            return 'black'
+        return self.turn
     
     def placement_complete(self):
         return self.pieces.all_pieces_placed()
 
-    def piece_placement(self, row, column):
+    def place_piece(self, row, column):
         if (row, column) in self.current_moves:
-            if self.board.check_position(row, column) != "empty":
-                print(self.board.check_position(row, column).lower())
+            if self.board.check_position(row, column) != CellType.EMPTY:
+                print(self.board.check_position(row, column))
                 return "GameManagerError -- position not empty"
             
             isPiecePlaced = 0

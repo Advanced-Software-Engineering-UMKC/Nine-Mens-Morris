@@ -37,26 +37,26 @@ class TestBoard:
     def test_empty_board_valid_moves(self, board):
         # Check that valid cells are set to EMPTY initially
         for row, column in board.get_valid_moves():
-            assert board.check_position(row, column) == "empty"
+            assert board.check_position(row, column) == CellType.EMPTY
 
 
     def test_set_position(self, board):
         # Test if set_position updates to desired state
         board.set_position(0, 0, "white")
         state = board.check_position(0, 0)
-        assert state == "white"
+        assert state == CellType.WHITE
 
 
     def test_create_board_indices_array(self, board):
         """Test if create_board_indices_array method works correctly."""
         num_lines = 7
-        board_of_cells = board.create_board_indices_array(num_lines)
+        board_of_cells = board.create_initial_board(num_lines)
 
         # assert board_indicies_array is a list of coordinates
         assert isinstance(board_of_cells, list)
         for line in board_of_cells:
             assert isinstance(line, list)
             for cell in line:
-                assert isinstance(cell, Cell.Cell)
+                assert isinstance(cell, Cell)
             assert len(line) == num_lines
         assert len(board_of_cells) == num_lines
