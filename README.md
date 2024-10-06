@@ -54,6 +54,10 @@ A virtual environment isolates project dependencies from your system's Python en
   ```bash
    pytest tests/
   ```
+  - To run test coverage and see how much of our code is covered
+  ```bash
+   pytest --cov=NINE-MENS-MORRIS tests/
+  ```
 
 **3. Configure Testing in the sidebar**
  - Select to use `pytest`, not `unittest`
