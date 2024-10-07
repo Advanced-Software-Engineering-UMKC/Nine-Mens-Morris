@@ -1,7 +1,8 @@
 # import pygame as pg
 from backend.Board import Board
-from backend.Piece import Pieces, Turn
 from backend.Cell import CellType
+from backend.Piece import Pieces, Turn
+
 
 class GameManager:
     def __init__(self, size, pieces):
@@ -19,10 +20,10 @@ class GameManager:
 
     def get_turn(self):
         return self.turn
-    
+
     def get_turn_as_string(self):
         return self.turn.name.lower()
-    
+
     def placement_complete(self):
         return self.pieces.all_pieces_placed()
 
@@ -31,29 +32,31 @@ class GameManager:
             if self.board.check_position(row, column) != CellType.EMPTY:
                 print(self.board.check_position(row, column))
                 return "GameManagerError -- position not empty"
-            
+
             isPiecePlaced = 0
             if self.turn == Turn.WHITE:
                 isPiecePlaced = self.pieces.set_white_piece(row, column)
             else:
                 isPiecePlaced = self.pieces.set_black_piece(row, column)
 
-
             if isPiecePlaced == 1:
                 self.board.set_position(row, column, self.turn.name.lower())
                 self.current_moves.remove((row, column))
                 return 1
-            #else error -- figure out handling. are we making error classes?
+            # else error -- figure out handling. are we making error classes?
             return 0
 
         else:
             return "GameManagerError -- invalid piece placement position"
-        
+
     # function for getting the current amount of pieces left to be placed
     def get_pieces_left(self):
         # dictionary for black and white pieces left to be placed
-        return {"white": self.pieces.size - self.pieces.count_white_placed, "black": self.pieces.size - self.pieces.count_black_placed}
-    
+        return {
+            "white": self.pieces.size - self.pieces.count_white_placed,
+            "black": self.pieces.size - self.pieces.count_black_placed,
+        }
+
     def end_turn(self):
         self.turn = Turn.swap_turn(self.turn)
         return 1

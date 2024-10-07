@@ -1,8 +1,9 @@
 import pytest
+
 from backend.Board import Board
-from backend.GameManager import GameManager
 from backend.Cell import CellType
-from backend.Piece import Turn 
+from backend.GameManager import GameManager
+from backend.Piece import Turn
 
 
 @pytest.fixture
@@ -11,10 +12,11 @@ def setup_board():
     board_size = 7
     total_pieces = 9
     game_manager = GameManager(board_size, total_pieces)
-    
+
     # When a new game is started
     board_class_instance = game_manager.get_board()
     return board_class_instance, board_size, game_manager
+
 
 class TestPiecePlacement:
     # Scenario: Placing a white piece on an empty cell
@@ -48,7 +50,7 @@ class TestPiecePlacement:
 
         # And the turn is changed to white
         assert game_manager.get_turn() == Turn.WHITE
-    
+
     # Scenario: Placing a piece on an occupied cell
     def test_place_piece_on_occupied_cell(self, setup_board):
         # Given the game is Nine Men’s Morris
@@ -61,7 +63,6 @@ class TestPiecePlacement:
 
         # Then an error message is returned
         assert res == "GameManagerError -- invalid piece placement position"
-
 
     # Scenario: Placing a piece on a cell that is out of bounds
     def test_place_piece_out_of_bounds(self, setup_board):
@@ -87,7 +88,7 @@ class TestPiecePlacement:
         # Then an error message is returned
         res = game_manager.place_piece(0, 0)
         assert res == "GameManagerError -- invalid piece placement position"
-    
+
     # Scenario: Placing black piece after all pieces have been placed
     def test_place_black_piece_after_all_pieces_placed(self, setup_board):
         # Given the game is Nine Men’s Morris

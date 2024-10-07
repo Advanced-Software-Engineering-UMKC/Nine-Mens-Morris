@@ -1,11 +1,13 @@
-from backend.GameManager import *
 import pytest
+
+from backend.GameManager import *
 
 
 @pytest.fixture
 def game_manager():
     game_manager = GameManager(7, 9)
     yield game_manager
+
 
 class TestGameManager:
     def test_initial_turn(self, game_manager):
@@ -25,10 +27,8 @@ class TestGameManager:
         res = game_manager.place_piece(0, 0)
         assert res == "GameManagerError -- invalid piece placement position"
 
-
     def test_end_turn(self, game_manager):
         # Test if the turn changes
         turn = game_manager.get_turn()
         game_manager.end_turn()
         assert game_manager.get_turn() != turn
-
