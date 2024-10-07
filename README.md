@@ -2,6 +2,7 @@
 
 **Screen shot of game running**
 
+![Screenshot of Nine-Mens-Morris](resources/example.png)
 
 ## Running the Project
 
