@@ -2,7 +2,7 @@
 
 **Screen shot of game running**
 
-![Screenshot of Nine-Mens-Morris](resources/example.png)
+![Screenshot of Nine-Mens-Morris](resources/example_release1.0.png)
 
 ## Running the Project
 
