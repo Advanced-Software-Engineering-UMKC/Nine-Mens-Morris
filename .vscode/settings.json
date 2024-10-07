@@ -11,4 +11,8 @@
     "python.testing.pytestArgs": [
         "tests"
     ],
+    "python.formatting.provider": "black",
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true,
+    "python.sortImports.args": ["--profile", "black"]
 }
