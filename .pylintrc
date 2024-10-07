@@ -1,0 +1,29 @@
+[MASTER]
+ignore=venv
+extension-pkg-whitelist=
+load-plugins=
+jobs=1
+
+[MESSAGES CONTROL]
+disable=
+    C0114,  # missing-module-docstring
+    C0115,  # missing-class-docstring
+    C0116,  # missing-function-docstring
+
+[FORMAT]
+max-line-length=88
+
+[DESIGN]
+max-args=5
+max-locals=15
+max-returns=6
+max-branches=12
+max-statements=50
+max-parents=7
+max-attributes=7
+max-public-methods=20
+max-bool-expr=5
+
+[TYPECHECK]
+ignore-mixin-members=yes
+ignore-on-opaque-inference=yes

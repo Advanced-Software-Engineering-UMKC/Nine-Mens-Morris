@@ -54,6 +54,10 @@ A virtual environment isolates project dependencies from your system's Python en
   ```bash
    pytest tests/
   ```
+  - To run test coverage and see how much of our code is covered by tests
+  ```bash
+   pytest --cov=NINE-MENS-MORRIS tests/
+  ```
 
 **3. Configure Testing in the sidebar**
  - Select to use `pytest`, not `unittest`
@@ -62,3 +66,15 @@ A virtual environment isolates project dependencies from your system's Python en
 
 **3. When writing new tests always put 'test_' at the front of every file name and test method name**
  - This is how pytest will find the test
+
+## Styling Guide
+**1. We are using the Microsoft style guide and to enforce this are making use of the python plugins:**
+ - black (config file ```pyproject.toml```)
+ - pylint (config file ```.pylintrc```)
+ - isort (config file```.isort.cfg```)
+
+ **2. To Apply these auto-formatters to your code run the following commands at the top of the project directory:**
+ - ```black .```
+ - ```isort .```
+ - ```pylint .```
+ 
