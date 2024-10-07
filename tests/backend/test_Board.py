@@ -45,8 +45,8 @@ class TestBoard:
         state = board.check_position(0, 0)
         assert state == CellType.WHITE
 
-    def test_create_board_indices_array(self, board):
-        """Test if create_board_indices_array method works correctly."""
+    def test_create_initial_board(self, board):
+        """Test if create_initial_board method works correctly."""
         num_lines = 7
         board_of_cells = board.create_initial_board(num_lines)
 

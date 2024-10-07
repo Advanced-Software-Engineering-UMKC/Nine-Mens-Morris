@@ -33,13 +33,13 @@ class GameManager:
                 print(self.board.check_position(row, column))
                 return "GameManagerError -- position not empty"
 
-            isPiecePlaced = 0
+            is_piece_placed = 0
             if self.turn == Turn.WHITE:
-                isPiecePlaced = self.pieces.set_white_piece(row, column)
+                is_piece_placed = self.pieces.set_white_piece(row, column)
             else:
-                isPiecePlaced = self.pieces.set_black_piece(row, column)
+                is_piece_placed = self.pieces.set_black_piece(row, column)
 
-            if isPiecePlaced == 1:
+            if is_piece_placed == 1:
                 self.board.set_position(row, column, self.turn.name.lower())
                 self.current_moves.remove((row, column))
                 return 1
