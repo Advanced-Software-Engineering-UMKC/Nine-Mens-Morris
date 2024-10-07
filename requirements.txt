@@ -1,3 +1,6 @@
 pygame
 pytest
 pytest-cov
+pylint
+black
+isort
