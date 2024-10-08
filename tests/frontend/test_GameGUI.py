@@ -1,16 +1,18 @@
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 import pygame as pg
 import pytest
 from frontend.GameGUI import GameGUI
 
-
 @pytest.fixture(scope="function")
 def game_fixture():
-    pg.display.set_mode([1, 1])  
-    game = GameGUI() 
-    yield game  
-    pg.quit() 
-
+    pg.init()
+    pg.display.set_mode((640, 480))
+    game = GameGUI()
+    game.board = MagicMock()
+    game.board.build_board = MagicMock()
+    
+    yield game
+    pg.quit()
 
 @pytest.mark.usefixtures("game_fixture")
 class TestGameGUI:
