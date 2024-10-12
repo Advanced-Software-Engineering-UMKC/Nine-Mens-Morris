@@ -78,3 +78,8 @@ A virtual environment isolates project dependencies from your system's Python en
  - ```isort .```
  - ```pylint .```
  
+## Debug Guide
+**1. The `launch.json` in the `.vscode` folder contains the configuration info for running the app from the 'Run and Debug' tab in vscode**
+- This allows us to place break points and full debug capabilities in both the backend and frontend code
+
+**2. The IDE should detect this right away. You may need to select to use the existing configuration file in the 'Run and Debug' tab**
