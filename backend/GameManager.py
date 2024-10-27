@@ -93,11 +93,8 @@ class GameManager:
 
         cell = self.board.get_cell(row, col)
         self.selected_piece = (row, col)
-        if self.turn == Color.WHITE and cell.get_state() == Color.WHITE:
-            # calculate the available adjacent positions
-            return self.filter_empty_adjacent(self.board.adjacent_positions_map[(row, col)])
 
-        if self.turn == Color.BLACK and self.board.check_position(row, col) == Color.BLACK:
+        if self.turn == cell.get_state():
             # calculate the available adjacent positions
             return self.filter_empty_adjacent(self.board.adjacent_positions_map[(row, col)])
 
