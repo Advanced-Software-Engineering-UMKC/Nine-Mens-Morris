@@ -10,7 +10,7 @@ class GameManager:
         self.pieces = Pieces(pieces)
         self.turn = Color.WHITE
         self.selected_piece = None
-        self.current_moves = self.board.get_valid_moves()
+        self.open_moves = self.board.get_valid_moves()
 
     def get_board(self, row=-1, col=-1):
         if row == -1 or col == -1:
@@ -27,7 +27,7 @@ class GameManager:
         return self.pieces.all_pieces_placed()
 
     def place_piece(self, row, column):
-        if (row, column) in self.current_moves:
+        if (row, column) in self.open_moves:
             if self.board.check_position(row, column) != Color.EMPTY:
                 print(self.board.check_position(row, column))
                 return "GameManagerError -- position not empty"
@@ -40,7 +40,7 @@ class GameManager:
 
             if is_piece_placed == 1:
                 self.board.set_position(row, column, self.turn.name.lower())
-                self.current_moves.remove((row, column))
+                self.open_moves.remove((row, column))
                 return 1
             # else error -- figure out handling. are we making error classes?
             return 0
@@ -71,7 +71,7 @@ class GameManager:
     def is_adjacent_and_empty(self, current_row, current_col, target_row, target_col):
         """ Check if the target cell is adjacent to the current cell and is empty """
         if self.is_adjacent(current_row, current_col, target_row, target_col):
-            if (target_row, target_col) in self.current_moves:
+            if (target_row, target_col) in self.open_moves:
                 return True
         return False
 
@@ -95,8 +95,19 @@ class GameManager:
         self.selected_piece = (row, col)
 
         if self.turn == cell.get_state():
+            total_pieces_left = 9
+            if self.turn == Color.WHITE:
+                total_pieces_left = len(self.pieces.white_pieces)
+            elif self.turn == Color.BLACK:
+                total_pieces_left = len(self.pieces.black_pieces)
+
             # calculate the available adjacent positions
-            return self.filter_empty_adjacent(self.board.adjacent_positions_map[(row, col)])
+            if total_pieces_left > 3:
+                # if more than 3 pieces left, user can only move to empty adjacent positions
+                return self.filter_empty_adjacent(self.board.adjacent_positions_map[(row, col)])
+            else:
+                # if less than or equal to 3 pieces left, user can fly
+                return self.open_moves
 
         self.selected_piece = None
         raise Exception("SelectionError -- Invalid piece selection")
@@ -107,21 +118,34 @@ class GameManager:
 
         start_row, start_col = self.selected_piece
 
+        total_pieces_left = 9
+        can_fly = False
+        if self.turn == Color.WHITE:
+            total_pieces_left = len(self.pieces.white_pieces)
+        elif self.turn == Color.BLACK:
+            total_pieces_left = len(self.pieces.black_pieces)
+
+        if total_pieces_left <= 3:
+            can_fly = True
+
         # Validate the target position is empty and adjacent
         if self.board.check_position(target_row, target_col) != Color.EMPTY:
             Exception("MoveError -- Target position is not empty")
 
-        if not self.is_adjacent_and_empty(start_row, start_col, target_row, target_col):
-            Exception("MoveError -- Invalid move, pieces can only move to adjacent positions")
+        if not can_fly:
+            if not self.is_adjacent_and_empty(start_row, start_col, target_row, target_col):
+                Exception("MoveError -- Invalid move, pieces can only move to adjacent positions")
 
         # Perform the move
         self.board.set_position(target_row, target_col, self.turn.name.lower())
         self.board.set_position(start_row, start_col, Color.EMPTY)
         # self.board.board[start_row][start_col] = None
-        self.current_moves.append((start_row, start_col))
-        self.current_moves.remove((target_row, target_col))
-        self.selected_piece = None
 
+        # removing the new position from open move and adding the previous position to it
+        self.open_moves.append((start_row, start_col))
+        self.open_moves.remove((target_row, target_col))
+
+        self.selected_piece = None
         return True
 
     def get_piece_at(self, row, col):
