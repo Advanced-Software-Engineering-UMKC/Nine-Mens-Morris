@@ -2,7 +2,7 @@
 from backend.Board import Board
 from backend.Cell import CellType
 from backend.Piece import Pieces, Turn
-
+from backend.Cell import Cell
 
 class GameManager:
     def __init__(self, size, pieces):
@@ -10,8 +10,7 @@ class GameManager:
         self.pieces = Pieces(pieces)
         self.turn = Turn.WHITE
         self.selected_piece = None
-        self.all_possible_moves = self.board.get_valid_moves()
-        self.current_moves = self.all_possible_moves
+        self.current_moves = self.board.get_valid_moves()
         
 
     def get_board(self, row=-1, col=-1):
@@ -75,7 +74,7 @@ class GameManager:
     def is_adjacent_and_empty(self, current_row, current_col, target_row, target_col):
         """ Check if the target cell is adjacent to the current cell and is empty """
         if self.is_adjacent(current_row, current_col, target_row, target_col):
-            if (target_row, target_col) in self.all_possible_moves:
+            if (target_row, target_col) in self.current_moves:
                 return True
         return False
     
@@ -112,6 +111,9 @@ class GameManager:
         # Perform the move
         self.board.set_position(target_row, target_col, self.turn.name.lower())
         self.board.set_position(start_row, start_col, CellType.EMPTY)
+        # self.board.board[start_row][start_col] = None
+        self.current_moves.append((start_row, start_col))
+        self.current_moves.remove((target_row, target_col))
         self.selected_piece = None
 
         return True

@@ -24,10 +24,14 @@ class BoardGUI:
         self.board = Board(board_size)
         self.count = 0
         self.win_size = WIN_SIZE
-        self.background_color = (255, 255, 255)  # White background
+        self.pieces_on_board = {}
 
     def draw_board(self):
         self.game.screen.blit(self.board_image, (0, 0))
+        # Draw all pieces currently on the board
+        for position, turn in self.pieces_on_board.items():
+            self.draw_piece(turn, (position[1] * self.cell_size, position[0] * self.cell_size))
+
 
     @staticmethod
     def get_scaled_image(path, resolution):
@@ -43,6 +47,11 @@ class BoardGUI:
         else:
             self.game.screen.blit(self.white_piece_image, position)
 
+    def remove_piece(self, row, col):
+        # Remove the piece from the internal structure
+        if (row, col) in self.pieces_on_board:
+            del self.pieces_on_board[(row, col)]
+
     
     def get_cell_clicked(self):
         current_cell = vec2(pg.mouse.get_pos()) // self.cell_size
@@ -56,7 +65,8 @@ class BoardGUI:
                 # Handle piece placement
                 is_piece_placed = self.game_manager.place_piece(row, col)
                 if is_piece_placed == 1:
-                    self.draw_piece(self.game_manager.get_turn(), current_cell * self.cell_size)
+                    self.pieces_on_board[(row, col)] = self.game_manager.get_turn()  # Add piece to the board
+                    self.draw_board()  # Redraw board to show new piece
                     self.game_manager.end_turn()  # End turn after placing a piece
                 return current_cell  # Return the current cell for left click
 
@@ -81,8 +91,11 @@ class BoardGUI:
                         move_success = self.game_manager.move_piece(row, col)
                         if move_success:
                             print(f"Piece moved to ({row}, {col})")
-                            self.draw_piece(self.game_manager.turn, current_cell * self.cell_size)  # Draw moved piece
-                            # self.remove_piece((selected_row, selected_col))
+                            # Remove the piece from the old position
+                            self.remove_piece(selected_row, selected_col)
+                            # Add the piece to the new position
+                            self.pieces_on_board[(row, col)] = self.game_manager.turn
+                            self.draw_board()  # Redraw board to show updated pieces
                             self.game_manager.end_turn()  # End turn after successful move
                         else:
                             print(f"Invalid move to ({row}, {col})")
