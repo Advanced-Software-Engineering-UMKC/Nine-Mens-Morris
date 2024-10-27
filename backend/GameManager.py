@@ -92,6 +92,7 @@ class GameManager:
             raise Exception("SelectionError -- Cannot select pieces during placement phase")
 
         cell = self.board.get_cell(row, col)
+        self.selected_piece = (row, col)
         if self.turn == Color.WHITE and cell.get_state() == Color.WHITE:
             # calculate the available adjacent positions
             return self.filter_empty_adjacent(self.board.adjacent_positions_map[(row, col)])
@@ -100,20 +101,21 @@ class GameManager:
             # calculate the available adjacent positions
             return self.filter_empty_adjacent(self.board.adjacent_positions_map[(row, col)])
 
+        self.selected_piece = None
         raise Exception("SelectionError -- Invalid piece selection")
 
     def move_piece(self, target_row, target_col):
         if not self.selected_piece:
-            return "MoveError -- No piece selected"
+            Exception("MoveError -- No piece selected")
 
         start_row, start_col = self.selected_piece
 
         # Validate the target position is empty and adjacent
         if self.board.check_position(target_row, target_col) != Color.EMPTY:
-            return "MoveError -- Target position is not empty"
+            Exception("MoveError -- Target position is not empty")
 
         if not self.is_adjacent_and_empty(start_row, start_col, target_row, target_col):
-            return "MoveError -- Invalid move, pieces can only move to adjacent positions"
+            Exception("MoveError -- Invalid move, pieces can only move to adjacent positions")
 
         # Perform the move
         self.board.set_position(target_row, target_col, self.turn.name.lower())
