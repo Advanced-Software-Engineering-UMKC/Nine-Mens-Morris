@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class CellType(Enum):
+class Color(Enum):
     EMPTY = 0
     BLACK = 1
     WHITE = 2
@@ -10,7 +10,7 @@ class CellType(Enum):
 
 class Cell:
     def __init__(self):
-        self.state = CellType.VOID
+        self.state = Color.VOID
 
     def get_state(self):
         return self.state

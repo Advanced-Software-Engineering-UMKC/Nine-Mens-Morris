@@ -12,7 +12,7 @@ def game_manager():
 class TestGameManager:
     def test_initial_turn(self, game_manager):
         # Test if the initial turn is WHITE
-        assert game_manager.get_turn() == Turn.WHITE
+        assert game_manager.get_turn() == Color.WHITE
 
     def test_all_pieces_placed(self, game_manager):
         # Test at initialization all pieces are not expected to be placed

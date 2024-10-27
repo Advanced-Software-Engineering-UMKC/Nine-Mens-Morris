@@ -2,7 +2,7 @@ import pygame as pg
 import pytest
 
 import backend.Board as Board
-from backend.Cell import Cell, CellType
+from backend.Cell import Cell, Color
 
 
 # fixtures create reusable instances for testing
@@ -37,13 +37,13 @@ class TestBoard:
     def test_empty_board_valid_moves(self, board):
         # Check that valid cells are set to EMPTY initially
         for row, column in board.get_valid_moves():
-            assert board.check_position(row, column) == CellType.EMPTY
+            assert board.check_position(row, column) == Color.EMPTY
 
     def test_set_position(self, board):
         # Test if set_position updates to desired state
         board.set_position(0, 0, "white")
         state = board.check_position(0, 0)
-        assert state == CellType.WHITE
+        assert state == Color.WHITE
 
     def test_create_initial_board(self, board):
         """Test if create_initial_board method works correctly."""

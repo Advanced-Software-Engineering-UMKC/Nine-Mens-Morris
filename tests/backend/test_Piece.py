@@ -5,7 +5,7 @@ from backend.Piece import *
 
 @pytest.fixture
 def piece():
-    piece = Piece(Turn.WHITE)
+    piece = Piece(Color.WHITE)
     yield piece
 
 
@@ -18,12 +18,12 @@ def pieces():
 class TestPiece:
     def test_piece_initialization(self, piece):
         # Test if the piece is initialized with the expected values
-        assert piece.get_turn() == Turn.WHITE
+        assert piece.get_turn() == Color.WHITE
         assert piece.get_position() == (-1, -1)
 
     def test_piece_set_turn(self, piece):
-        piece.set_turn(Turn.BLACK)
-        assert piece.get_turn() == Turn.BLACK
+        piece.set_turn(Color.BLACK)
+        assert piece.get_turn() == Color.BLACK
 
     def test_piece_set_position(self, piece):
         piece.set_position((1, 1))

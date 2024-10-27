@@ -1,5 +1,5 @@
 # import pygame as pg
-from backend.Cell import Cell, CellType
+from backend.Cell import Cell, Color
 
 
 class Board:
@@ -75,7 +75,7 @@ class Board:
         for index, row in enumerate(self.board):
             valid = self.init_valid_moves(index)
             for cell in valid:
-                self.board[index][cell].set_state(CellType.EMPTY)
+                self.board[index][cell].set_state(Color.EMPTY)
                 self.valid_moves.append((index, cell))
 
     def get_valid_moves(self):
@@ -87,9 +87,12 @@ class Board:
 
     def set_position(self, row, column, color):
         if color == "white":
-            self.board[row][column].set_state(CellType.WHITE)
+            self.board[row][column].set_state(Color.WHITE)
         elif color == "black":
-            self.board[row][column].set_state(CellType.BLACK)
+            self.board[row][column].set_state(Color.BLACK)
         else:
-            self.board[row][column].set_state(CellType.EMPTY)
+            self.board[row][column].set_state(Color.EMPTY)
         return 1
+
+    def get_cell(self, row, column):
+        return self.board[row][column]

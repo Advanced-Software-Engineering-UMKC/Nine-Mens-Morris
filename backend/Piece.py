@@ -1,16 +1,16 @@
 from enum import Enum
 
+from backend.Cell import Color
+
 
 class Turn(Enum):
-    BLACK = 1
-    WHITE = 2
 
     @classmethod
     def swap_turn(self, curr):
-        if curr == Turn.BLACK:
-            return Turn.WHITE
+        if curr == Color.BLACK:
+            return Color.WHITE
         else:
-            return Turn.BLACK
+            return Color.BLACK
 
 
 class Piece:
@@ -37,8 +37,8 @@ class Pieces:
         self.black_pieces = []
 
         for _ in range(total):
-            self.white_pieces.append(Piece(Turn.WHITE))
-            self.black_pieces.append(Piece(Turn.BLACK))
+            self.white_pieces.append(Piece(Color.WHITE))
+            self.black_pieces.append(Piece(Color.BLACK))
 
         self.count_white_placed = 0
         self.count_black_placed = 0
