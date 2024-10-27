@@ -1,9 +1,7 @@
 import pytest
 
-from backend.Board import Board
-from backend.Cell import CellType
+from backend.Cell import Color
 from backend.GameManager import GameManager
-from backend.Piece import Turn
 
 
 @pytest.fixture
@@ -26,7 +24,7 @@ class TestTurnSwitching:
 
         # When a new game is started
         # Then the turn is white
-        assert game_manager.get_turn() == Turn.WHITE
+        assert game_manager.get_turn() == Color.WHITE
 
     # Scenario: White Turn Switches to Black
     def test_white_turn_switches_to_black(self, setup_board):
@@ -38,7 +36,7 @@ class TestTurnSwitching:
         game_manager.end_turn()
 
         # Then the turn is black
-        assert game_manager.get_turn() == Turn.BLACK
+        assert game_manager.get_turn() == Color.BLACK
 
     # Scenario: Black Turn Switches to White
     def test_black_turn_switches_to_white(self, setup_board):
@@ -52,4 +50,4 @@ class TestTurnSwitching:
         game_manager.end_turn()
 
         # Then the turn is white
-        assert game_manager.get_turn() == Turn.WHITE
+        assert game_manager.get_turn() == Color.WHITE
