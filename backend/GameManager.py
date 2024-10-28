@@ -78,10 +78,19 @@ class GameManager:
     def filter_empty_adjacent(self, adjacent_positions):
         filtered_adjacent_positions = []
         for row, col in adjacent_positions:
-            if self.board.check_position(row, col) == Color.EMPTY or self.board.check_position(row, col) == Color.VOID:
+            position_state = self.board.check_position(row, col)
+            if position_state == Color.EMPTY or position_state == Color.VOID:
                 filtered_adjacent_positions.append((row, col))
 
         return filtered_adjacent_positions
+
+    def can_fly(self):
+        can_fly = False
+        if self.turn == Color.WHITE and len(self.pieces.white_pieces) <= 3:
+            can_fly = True
+        elif self.turn == Color.BLACK and len(self.pieces.black_pieces) <= 3:
+            can_fly = True
+        return can_fly
 
     '''
     the select_piece func should return the available empty adjacent positions to where the piece can be moved 
@@ -95,22 +104,17 @@ class GameManager:
         self.selected_piece = (row, col)
 
         if self.turn == cell.get_state():
-            total_pieces_left = 9
-            if self.turn == Color.WHITE:
-                total_pieces_left = len(self.pieces.white_pieces)
-            elif self.turn == Color.BLACK:
-                total_pieces_left = len(self.pieces.black_pieces)
-
             # calculate the available adjacent positions
-            if total_pieces_left > 3:
+            if self.can_fly():
+                # if can fly, return all open positions
+                return self.open_moves
+            else:
                 # if more than 3 pieces left, user can only move to empty adjacent positions
                 return self.filter_empty_adjacent(self.board.adjacent_positions_map[(row, col)])
-            else:
-                # if less than or equal to 3 pieces left, user can fly
-                return self.open_moves
 
         self.selected_piece = None
         raise Exception("SelectionError -- Invalid piece selection")
+
 
     def move_piece(self, target_row, target_col):
         if not self.selected_piece:
@@ -118,21 +122,11 @@ class GameManager:
 
         start_row, start_col = self.selected_piece
 
-        total_pieces_left = 9
-        can_fly = False
-        if self.turn == Color.WHITE:
-            total_pieces_left = len(self.pieces.white_pieces)
-        elif self.turn == Color.BLACK:
-            total_pieces_left = len(self.pieces.black_pieces)
-
-        if total_pieces_left <= 3:
-            can_fly = True
-
         # Validate the target position is empty and adjacent
         if self.board.check_position(target_row, target_col) != Color.EMPTY:
             Exception("MoveError -- Target position is not empty")
 
-        if not can_fly:
+        if not self.can_fly():
             if not self.is_adjacent_and_empty(start_row, start_col, target_row, target_col):
                 Exception("MoveError -- Invalid move, pieces can only move to adjacent positions")
 
