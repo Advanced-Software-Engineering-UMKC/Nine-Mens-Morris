@@ -1,6 +1,6 @@
 # import pygame as pg
 from backend.Board import Board
-from backend.Piece import Pieces, Turn
+from backend.Piece import Pieces
 from backend.Cell import Color
 
 
@@ -57,7 +57,7 @@ class GameManager:
         }
 
     def end_turn(self):
-        self.turn = Turn.swap_turn(self.turn)
+        self.turn = Color.swap_turn(self.turn)
         return 1
 
     def is_adjacent(self, current_row, current_col, target_row, target_col):
@@ -84,11 +84,11 @@ class GameManager:
 
         return filtered_adjacent_positions
 
-    def can_fly(self):
+    def can_fly(self, player):
         can_fly = False
-        if self.turn == Color.WHITE and len(self.pieces.white_pieces) <= 3:
+        if player == Color.WHITE and len(self.pieces.white_pieces) <= 3:
             can_fly = True
-        elif self.turn == Color.BLACK and len(self.pieces.black_pieces) <= 3:
+        elif player == Color.BLACK and len(self.pieces.black_pieces) <= 3:
             can_fly = True
         return can_fly
 
@@ -105,7 +105,7 @@ class GameManager:
 
         if self.turn == cell.get_state():
             # calculate the available adjacent positions
-            if self.can_fly():
+            if self.can_fly(self.turn):
                 # if can fly, return all open positions
                 return self.open_moves
             else:
@@ -126,7 +126,7 @@ class GameManager:
         if self.board.check_position(target_row, target_col) != Color.EMPTY:
             Exception("MoveError -- Target position is not empty")
 
-        if not self.can_fly():
+        if not self.can_fly(self.turn):
             if not self.is_adjacent_and_empty(start_row, start_col, target_row, target_col):
                 Exception("MoveError -- Invalid move, pieces can only move to adjacent positions")
 

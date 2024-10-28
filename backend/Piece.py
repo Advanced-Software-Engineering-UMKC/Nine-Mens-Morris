@@ -3,16 +3,6 @@ from enum import Enum
 from backend.Cell import Color
 
 
-class Turn(Enum):
-
-    @classmethod
-    def swap_turn(self, curr):
-        if curr == Color.BLACK:
-            return Color.WHITE
-        else:
-            return Color.BLACK
-
-
 class Piece:
     def __init__(self, color):
         self.color = color
