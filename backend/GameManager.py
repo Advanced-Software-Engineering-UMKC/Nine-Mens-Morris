@@ -75,14 +75,16 @@ class GameManager:
                 return True
         return False
 
-    def filter_empty_adjacent(self, adjacent_positions):
-        filtered_adjacent_positions = []
-        for row, col in adjacent_positions:
+    def find_empty_adjacents(self, row, col):
+        empty_adjacent_positions = []
+        all_adjacent_positions = self.board.adjacent_positions_map[(row, col)]
+
+        for row, col in all_adjacent_positions:
             position_state = self.board.check_position(row, col)
             if position_state == Color.EMPTY or position_state == Color.VOID:
-                filtered_adjacent_positions.append((row, col))
+                empty_adjacent_positions.append((row, col))
 
-        return filtered_adjacent_positions
+        return empty_adjacent_positions
 
     def can_fly(self, player):
         can_fly = False
@@ -110,7 +112,7 @@ class GameManager:
                 return self.open_moves
             else:
                 # if more than 3 pieces left, user can only move to empty adjacent positions
-                return self.filter_empty_adjacent(self.board.adjacent_positions_map[(row, col)])
+                return self.find_empty_adjacents(row, col)
 
         self.selected_piece = None
         raise Exception("SelectionError -- Invalid piece selection")
