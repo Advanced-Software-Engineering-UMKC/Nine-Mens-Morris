@@ -1,9 +1,7 @@
 import pytest
 
-from backend.Board import Board
-from backend.Cell import CellType
+from backend.Cell import Color
 from backend.GameManager import GameManager
-from backend.Piece import Turn
 
 
 @pytest.fixture
@@ -29,10 +27,10 @@ class TestPiecePlacement:
         game_manager.end_turn()
 
         # Then the cell is occupied by a white piece
-        assert board_class_instance.check_position(0, 0) == CellType.WHITE
+        assert board_class_instance.check_position(0, 0) == Color.WHITE
 
         # And the turn is changed to black
-        assert game_manager.get_turn() == Turn.BLACK
+        assert game_manager.get_turn() == Color.BLACK
 
     # Scenario: Placing a black piece on an empty cell
     def test_place_black_piece_on_empty_cell(self, setup_board):
@@ -46,10 +44,10 @@ class TestPiecePlacement:
         game_manager.end_turn()
 
         # Then the cell is occupied by a black piece
-        assert board_class_instance.check_position(1, 1) == CellType.BLACK
+        assert board_class_instance.check_position(1, 1) == Color.BLACK
 
         # And the turn is changed to white
-        assert game_manager.get_turn() == Turn.WHITE
+        assert game_manager.get_turn() == Color.WHITE
 
     # Scenario: Placing a piece on an occupied cell
     def test_place_piece_on_occupied_cell(self, setup_board):

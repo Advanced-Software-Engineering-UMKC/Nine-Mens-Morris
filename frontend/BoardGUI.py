@@ -1,8 +1,7 @@
 import pygame as pg
 
 from backend.Board import Board
-from backend.GameManager import GameManager
-from backend.Piece import Turn
+from backend.Cell import Color
 
 vec2 = pg.math.Vector2 
 
@@ -42,7 +41,7 @@ class BoardGUI:
         self.draw_board()
 
     def draw_piece(self, turn, position):
-        if turn == Turn.BLACK:
+        if turn == Color.BLACK:
             self.game.screen.blit(self.black_piece_image, position)
         else:
             self.game.screen.blit(self.white_piece_image, position)

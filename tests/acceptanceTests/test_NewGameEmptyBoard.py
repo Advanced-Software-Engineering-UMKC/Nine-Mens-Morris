@@ -1,7 +1,6 @@
 import pytest
 
-from backend.Board import Board
-from backend.Cell import CellType
+from backend.Cell import Color
 from backend.GameManager import GameManager
 
 
@@ -31,12 +30,12 @@ class TestNewGameEmptyBoard:
 
         for row_index, row in enumerate(board_class_instance.board):
             for cell_index, cell in enumerate(row):
-                assert cell.state != CellType.BLACK and cell.state != CellType.WHITE
+                assert cell.state != Color.BLACK and cell.state != Color.WHITE
                 cell_position = (row_index, cell_index)
                 if cell_position in board_class_instance.get_valid_moves():
-                    assert cell.state == CellType.EMPTY
+                    assert cell.state == Color.EMPTY
                 else:
-                    assert cell.state == CellType.VOID
+                    assert cell.state == Color.VOID
 
     # Scenario: Invalid Row Index
     def test_invalid_row(self, setup_board):
