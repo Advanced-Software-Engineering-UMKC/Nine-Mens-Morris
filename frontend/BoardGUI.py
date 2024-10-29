@@ -66,6 +66,12 @@ class BoardGUI:
                 if is_piece_placed == 1:
                     self.pieces_on_board[(row, col)] = self.game_manager.get_turn()  # Add piece to the board
                     self.draw_board()  # Redraw board to show new piece
+                    
+                    # Check if the piece forms a mill
+                    if self.game_manager.is_mill_formed(row, col, self.game_manager.get_turn()):
+                        print("Mill formed! Remove opponent's piece.")
+                        self.remove_opponent_piece(self.game_manager.get_turn())
+                    
                     self.game_manager.end_turn()  # End turn after placing a piece
                 return current_cell  # Return the current cell for left click
 
@@ -95,6 +101,12 @@ class BoardGUI:
                             # Add the piece to the new position
                             self.pieces_on_board[(row, col)] = self.game_manager.turn
                             self.draw_board()  # Redraw board to show updated pieces
+                            
+                            # Check if the move forms a mill
+                            if self.game_manager.is_mill_formed(row, col, self.game_manager.turn):
+                                print("Mill formed! Remove opponent's piece.")
+                                self.remove_opponent_piece(self.game_manager.get_turn())
+                            
                             self.game_manager.end_turn()  # End turn after successful move
                         else:
                             print(f"Invalid move to ({row}, {col})")
@@ -111,3 +123,26 @@ class BoardGUI:
                 self.game_manager.selected_piece = None
 
         return None
+
+    
+    def remove_opponent_piece(self, turn):
+        opponent_turn = Color.BLACK if turn == Color.WHITE else Color.WHITE
+        
+        # Get all opponent's pieces
+        opponent_pieces = [
+            (row, col) for (row, col), piece_turn in self.pieces_on_board.items()
+            if piece_turn == opponent_turn
+        ]
+        
+        opponent_pieces_non_mill = [(row, col) for row, col in opponent_pieces if not self.game_manager.is_mill_formed(row, col, opponent_turn)]
+       
+        if opponent_pieces_non_mill:
+            print('options to remove : ' , opponent_pieces_non_mill)
+            return True
+
+        # If no non-mill pieces, remove a mill piece
+        if opponent_pieces:
+            print('options to remove : ' , opponent_pieces)
+            return True
+
+        return False  # No pieces to remove

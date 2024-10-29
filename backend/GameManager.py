@@ -11,6 +11,29 @@ class GameManager:
         self.turn = Color.WHITE
         self.selected_piece = None
         self.open_moves = self.board.get_valid_moves()
+        self.mills = [
+            [(0, 0), (0, 3), (0, 6)],  # Horizontal mills
+            [(1, 1), (1, 3), (1, 5)],
+            [(2, 2), (2, 3), (2, 4)],
+            [(3, 0), (3, 1), (3, 2)],
+            [(3, 4), (3, 5), (3, 6)],
+            [(4, 2), (4, 3), (4, 4)],
+            [(5, 1), (5, 3), (5, 5)],
+            [(6, 0), (6, 3), (6, 6)],
+
+            # Vertical mills
+            [(0, 0), (3, 0), (6, 0)],
+            [(1, 1), (3, 1), (5, 1)],
+            [(2, 2), (4, 2), (5, 2)],
+            [(0, 3), (1, 3), (2, 3)],
+            [(4, 3), (5, 3), (6, 3)],
+            [(2, 4), (4, 4), (5, 4)],
+            [(1, 5), (3, 5), (5, 5)],
+            [(0, 6), (3, 6), (6, 6)]
+        ]
+
+        
+
 
     def get_board(self, row=-1, col=-1):
         if row == -1 or col == -1:
@@ -145,4 +168,34 @@ class GameManager:
         return True
 
     def get_piece_at(self, row, col):
-        return self.board.board[row][col]
+        return self.board.board[row][col]  
+    
+    # def is_mill_formed(self, row, col, turn):
+    #     for mill in self.mills:
+    #         if (row, col) in mill:
+    #             # Check if all three positions in this mill belong to the current player
+    #             first = self.get_piece_at(r, c)
+                
+    #             if all(self.get_piece_at(r, c) == turn for r, c in mill):
+    #                 return True
+    #     return False
+
+
+    def is_mill_formed(self, row, col, turn):
+        for mill in self.mills:
+            if (row, col) in mill:
+                # Create an empty list to store comparison results
+                pieces_in_mill = []
+                
+                # Loop through each position in the mill
+                for r, c in mill:
+                    piece_at_position = self.get_piece_at(r, c)  # Get the piece at the mill position
+                    is_current_turn_piece = (piece_at_position.get_state().name == turn.name)  # Check if it's the current player's turn
+                    pieces_in_mill.append(is_current_turn_piece)  # Append the result (True/False) to the list
+                
+                # Now use 'all' to check if all the values in the list are True
+                if all(pieces_in_mill):
+                    return True
+
+        return False
+    
