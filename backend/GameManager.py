@@ -11,6 +11,8 @@ class GameManager:
         self.turn = Color.WHITE
         self.selected_piece = None
         self.open_moves = self.board.get_valid_moves()
+        
+        # Mill variables
         self.mills = [
             [(0, 0), (0, 3), (0, 6)],  # Horizontal mills
             [(1, 1), (1, 3), (1, 5)],
@@ -31,6 +33,8 @@ class GameManager:
             [(1, 5), (3, 5), (5, 5)],
             [(0, 6), (3, 6), (6, 6)]
         ]
+        self.waiting_for_removal = False
+        self.removable_pieces = []
 
         
 
