@@ -52,6 +52,60 @@ class BoardGUI:
             del self.pieces_on_board[(row, col)]
 
     
+    def handle_mill(self,row, col):
+        if (row, col) in self.game_manager.removable_pieces:
+            # Valid piece selected to remove
+            print(f"Removing opponent's piece at ({row}, {col})")
+            self.remove_piece(row, col)  # Remove the piece from the board
+            self.draw_board()  # Redraw the board after removal
+            status = self.game_manager.remove_piece_mill(row, col)
+            if status:
+                print(f"Removed opponent's piece at ({row}, {col})")
+        else:
+            print(f"Invalid selection. Please select a piece from: {self.game_manager.removable_pieces}")
+    
+    def handle_moment_phase(self,row, col):
+        if self.game_manager.selected_piece is None:
+            # No piece selected, attempt to select a piece
+            piece_at_cell = self.game_manager.get_piece_at(row, col)
+            if piece_at_cell and piece_at_cell.get_state().name == self.game_manager.turn.name:
+                # Only allow selection if the piece belongs to the current player's turn
+                self.game_manager.selected_piece = (row, col)
+                print(f"Piece selected at ({row}, {col})")
+            else:
+                print("Cannot select piece: not current player's turn or empty cell")
+        else:
+            # A piece is already selected, attempt to move it
+            selected_row, selected_col = self.game_manager.selected_piece
+
+            # Check if the move is valid (adjacent and empty)
+            if self.game_manager.is_adjacent_and_empty(selected_row, selected_col, row, col):
+                # Move the piece to the new location
+                move_success = self.game_manager.move_piece(row, col)
+                if move_success:
+                    print(f"Piece moved to ({row}, {col})")
+                    # Remove the piece from the old position
+                    self.remove_piece(selected_row, selected_col)
+                    
+                    # Add the piece to the new position
+                    self.pieces_on_board[(row, col)] = self.game_manager.turn
+                    self.draw_board()  # Redraw board to show updated pieces
+                    
+                    # Check if the move forms a mill
+                    if self.game_manager.is_mill_formed(row, col):
+                        print("Mill formed! Remove opponent's piece.")
+                        self.game_manager.remove_opponent_piece(self.pieces_on_board)
+                    
+                    self.game_manager.end_turn()  # End turn after successful move
+                else:
+                    print(f"Invalid move to ({row}, {col})")
+            else:
+                print(f"Cell ({row}, {col}) is not adjacent or not empty")
+
+            # Clear the selected piece regardless of move success
+            self.game_manager.selected_piece = None
+    
+    
     def get_cell_clicked(self):
         current_cell = vec2(pg.mouse.get_pos()) // self.cell_size
         col, row = map(int, current_cell)
@@ -61,78 +115,19 @@ class BoardGUI:
         # Handle opponent's piece removal if mill is formed
         if self.game_manager.waiting_for_removal:
             if mouse_buttons[0]:
-                if (row, col) in self.game_manager.removable_pieces:
-                    # Valid piece selected to remove
-                    print(f"Removing opponent's piece at ({row}, {col})")
-                    self.remove_piece(row, col)  # Remove the piece from the board
-                    self.draw_board()  # Redraw the board after removal
-                    self.game_manager.open_moves.append((row, col))
-                    self.game_manager.board.set_position(row, col, Color.EMPTY)
-                    self.game_manager.waiting_for_removal = False  # Reset the removal state
-                    self.game_manager.removable_pieces = []  # Clear the list of removable pieces
-                    self.game_manager.end_turn()  # End the turn after removal
-                    self.game_manager.end_turn()  # swap the turn to opponent
-                    # self.remove_opponent_piece(self.game_manager.get_turn())
-                else:
-                    print(f"Invalid selection. Please select a piece from: {self.game_manager.removable_pieces}")
+                self.handle_mill(row , col)
             return current_cell
 
         # Left click - Select or move piece
         if mouse_buttons[0]:
             if not self.game_manager.placement_complete():
                 # Handle piece placement
-                is_piece_placed = self.game_manager.place_piece(row, col)
-                if is_piece_placed == 1:
-                    self.pieces_on_board[(row, col)] = self.game_manager.get_turn()  # Add piece to the board
-                    self.draw_board()  # Redraw board to show new piece
-                    
-                    # Check if the piece forms a mill
-                    if self.game_manager.is_mill_formed(row, col, self.game_manager.get_turn()):
-                        print("Mill formed! Remove opponent's piece.")
-                        self.remove_opponent_piece(self.game_manager.get_turn())
-                    
-                    self.game_manager.end_turn()  # End turn after placing a piece
+                self.game_manager.handle_piece_placement(row, col , self.pieces_on_board)
+                self.draw_board()
                 return current_cell  # Return the current cell for left click
             else:
                 # Movement phase
-                if self.game_manager.selected_piece is None:
-                    # No piece selected, attempt to select a piece
-                    piece_at_cell = self.game_manager.get_piece_at(row, col)
-                    if piece_at_cell and piece_at_cell.get_state().name == self.game_manager.turn.name:
-                        # Only allow selection if the piece belongs to the current player's turn
-                        self.game_manager.selected_piece = (row, col)
-                        print(f"Piece selected at ({row}, {col})")
-                    else:
-                        print("Cannot select piece: not current player's turn or empty cell")
-                else:
-                    # A piece is already selected, attempt to move it
-                    selected_row, selected_col = self.game_manager.selected_piece
-
-                    # Check if the move is valid (adjacent and empty)
-                    if self.game_manager.is_adjacent_and_empty(selected_row, selected_col, row, col):
-                        # Move the piece to the new location
-                        move_success = self.game_manager.move_piece(row, col)
-                        if move_success:
-                            print(f"Piece moved to ({row}, {col})")
-                            # Remove the piece from the old position
-                            self.remove_piece(selected_row, selected_col)
-                            # Add the piece to the new position
-                            self.pieces_on_board[(row, col)] = self.game_manager.turn
-                            self.draw_board()  # Redraw board to show updated pieces
-                            
-                            # Check if the move forms a mill
-                            if self.game_manager.is_mill_formed(row, col, self.game_manager.turn):
-                                print("Mill formed! Remove opponent's piece.")
-                                self.remove_opponent_piece(self.game_manager.get_turn())
-                            
-                            self.game_manager.end_turn()  # End turn after successful move
-                        else:
-                            print(f"Invalid move to ({row}, {col})")
-                    else:
-                        print(f"Cell ({row}, {col}) is not adjacent or not empty")
-
-                    # Clear the selected piece regardless of move success
-                    self.game_manager.selected_piece = None
+                self.handle_moment_phase(row , col)
 
         # Right click - Deselect piece
         if mouse_buttons[2]:
@@ -143,29 +138,4 @@ class BoardGUI:
         return None
 
     
-    def remove_opponent_piece(self, turn):
-        opponent_turn = Color.BLACK if turn == Color.WHITE else Color.WHITE
-        
-        # Get all opponent's pieces
-        opponent_pieces = [
-            (row, col) for (row, col), piece_turn in self.pieces_on_board.items()
-            if piece_turn == opponent_turn
-        ]
-        
-        # Try to remove non-mill pieces first
-        opponent_pieces_non_mill = [(row, col) for row, col in opponent_pieces if not self.game_manager.is_mill_formed(row, col, opponent_turn)]
-        
-        if opponent_pieces_non_mill:
-            print('Select a piece to remove from these non-mill options: ', opponent_pieces_non_mill)
-            self.game_manager.waiting_for_removal = True
-            self.game_manager.removable_pieces = opponent_pieces_non_mill  
-            return True
-
-        # If no non-mill pieces, remove a mill piece
-        if opponent_pieces:
-            print('All opponent pieces are in mills. Select one to remove: ', opponent_pieces)
-            self.game_manager.waiting_for_removal = True
-            self.game_manager.removable_pieces = opponent_pieces
-            return True
-
-        return False 
+    

@@ -36,8 +36,6 @@ class GameManager:
         self.waiting_for_removal = False
         self.removable_pieces = []
 
-        
-
 
     def get_board(self, row=-1, col=-1):
         if row == -1 or col == -1:
@@ -185,7 +183,7 @@ class GameManager:
     #     return False
 
 
-    def is_mill_formed(self, row, col, turn):
+    def is_mill_formed(self, row, col):
         for mill in self.mills:
             if (row, col) in mill:
                 # Create an empty list to store comparison results
@@ -194,7 +192,7 @@ class GameManager:
                 # Loop through each position in the mill
                 for r, c in mill:
                     piece_at_position = self.get_piece_at(r, c)  # Get the piece at the mill position
-                    is_current_turn_piece = (piece_at_position.get_state().name == turn.name)  # Check if it's the current player's turn
+                    is_current_turn_piece = (piece_at_position.get_state().name == self.get_turn().name)  # Check if it's the current player's turn
                     pieces_in_mill.append(is_current_turn_piece)  # Append the result (True/False) to the list
                 
                 # Now use 'all' to check if all the values in the list are True
@@ -203,3 +201,54 @@ class GameManager:
 
         return False
     
+    def remove_piece_mill(self, row, col):
+        self.open_moves.append((row, col))
+        self.board.set_position(row, col, Color.EMPTY)
+        self.waiting_for_removal = False  # Reset the removal state
+        self.removable_pieces = []  # Clear the list of removable pieces
+        self.end_turn()  # End the turn after removal
+        self.end_turn()  # swap the turn to opponent
+        return True
+    
+    def remove_opponent_piece(self , pieces_on_board):
+        opponent_turn = Color.BLACK if self.get_turn() == Color.WHITE else Color.WHITE
+        
+        # Get all opponent's pieces
+        opponent_pieces = [
+            (row, col) for (row, col), piece_turn in pieces_on_board.items()
+            if piece_turn == opponent_turn
+        ]
+        
+        # Try to remove non-mill pieces first - logic is wrong but it works as user select write piece
+        opponent_pieces_non_mill = [(row, col) for row, col in opponent_pieces if not self.is_mill_formed(row, col)]
+        
+        if opponent_pieces_non_mill:
+            print('Select a piece to remove from these non-mill options: ', opponent_pieces_non_mill)
+            self.waiting_for_removal = True
+            self.removable_pieces = opponent_pieces_non_mill  
+            return True
+
+        # If no non-mill pieces, remove a mill piece
+        if opponent_pieces and not opponent_pieces_non_mill:
+            print('All opponent pieces are in mills. Select one to remove: ', opponent_pieces)
+            self.waiting_for_removal = True
+            self.removable_pieces = opponent_pieces
+            return True
+        
+        if opponent_pieces:
+            print('you can only select non mill peices sice opponent has it...')
+        
+        return False 
+
+    def handle_piece_placement(self, row, col , pieces_on_board):
+        is_piece_placed = self.place_piece(row, col)
+        if is_piece_placed == 1:
+            pieces_on_board[(row, col)] = self.get_turn()  # Add piece to the board
+            # self.draw_board()  
+            
+            # Check if the piece forms a mill
+            if self.is_mill_formed(row, col):
+                print("Mill formed! Remove opponent's piece.")
+                self.remove_opponent_piece(pieces_on_board)
+                
+            self.end_turn()  
