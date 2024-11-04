@@ -151,11 +151,11 @@ class GameManager:
 
         # Validate the target position is empty and adjacent
         if self.board.check_position(target_row, target_col) != Color.EMPTY:
-            Exception("MoveError -- Target position is not empty")
+            raise Exception("MoveError -- Target position is not empty")
 
         if not self.can_fly(self.turn):
             if not self.is_adjacent_and_empty(start_row, start_col, target_row, target_col):
-                Exception("MoveError -- Invalid move, pieces can only move to adjacent positions")
+                raise Exception("MoveError -- Invalid move, pieces can only move to adjacent positions")
 
         # Perform the move
         self.board.set_position(target_row, target_col, self.turn.name.lower())

@@ -1,6 +1,5 @@
 import pygame as pg
 
-from backend.Board import Board
 from backend.Cell import Color
 
 vec2 = pg.math.Vector2 
@@ -20,7 +19,6 @@ class BoardGUI:
             "resources/pieces/white_piece.png", [self.cell_size] * 2
         )
         self.game_manager = gameManager
-        self.board = Board(board_size)
         self.count = 0
         self.win_size = WIN_SIZE
         self.pieces_on_board = {}

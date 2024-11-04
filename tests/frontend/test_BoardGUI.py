@@ -25,7 +25,7 @@ def board_gui_fixture():
 class TestBoardGUI:
     def test_initialization(self,board_gui_fixture):
         board_gui, _ = board_gui_fixture
-        assert board_gui.cell_size == board_gui.win_size // board_gui.board.board_size
+        assert board_gui.cell_size == board_gui.win_size // board_gui.game_manager.board.board_size
         assert isinstance(board_gui.game_manager, GameManager)
         assert board_gui.count == 0
 
@@ -35,8 +35,8 @@ class TestBoardGUI:
         assert board_gui.black_piece_image is not None
         assert board_gui.white_piece_image is not None
 
-        assert isinstance(board_gui.board, Board)
-        assert board_gui.board.board_size == 8  # hardecoded above
+        assert isinstance(board_gui.game_manager.board, Board)
+        assert board_gui.game_manager.board.board_size == 8  # hardecoded above
 
         assert isinstance(board_gui.game_manager, GameManager)
 

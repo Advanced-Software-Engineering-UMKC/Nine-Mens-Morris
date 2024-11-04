@@ -54,7 +54,6 @@ class Board:
 
         return self.board
 
-    # is this valid movement for 6, 9, and 12?
     def init_valid_moves(self, row):
         rowMoves = []
         middle = (self.board_size - 1) // 2
