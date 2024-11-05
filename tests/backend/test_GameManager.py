@@ -91,13 +91,13 @@ class TestGameManager:
     def test_fly_piece(self, game_manager):
         # placing all 9 pieces for both players
         game_manager = place_test_pieces(game_manager)
+        assert not game_manager.can_fly(game_manager.turn)
 
         # decreasing the black piece count to 3
         for i in range(6):
             game_manager.pieces.decrease_black_piece_count()
 
         game_manager.end_turn()
-
         assert game_manager.can_fly(game_manager.turn)
 
     def test_end_game(self, game_manager):
