@@ -79,28 +79,28 @@ class BoardGUI:
             selected_row, selected_col = self.game_manager.selected_piece
 
             # Check if the move is valid (adjacent and empty)
-            if self.game_manager.is_adjacent_and_empty(selected_row, selected_col, row, col):
+            try:
                 # Move the piece to the new location
                 move_success = self.game_manager.move_piece(row, col)
                 if move_success:
                     print(f"Piece moved to ({row}, {col})")
                     # Remove the piece from the old position
                     self.remove_piece(selected_row, selected_col)
-                    
+
                     # Add the piece to the new position
                     self.pieces_on_board[(row, col)] = self.game_manager.turn
                     self.draw_board()  # Redraw board to show updated pieces
-                    
+
                     # Check if the move forms a mill
                     if self.game_manager.is_mill_formed(row, col):
                         print("Mill formed! Remove opponent's piece.")
                         self.game_manager.remove_opponent_piece(self.pieces_on_board)
-                    
+
                     self.game_manager.end_turn()  # End turn after successful move
                 else:
                     print(f"Invalid move to ({row}, {col})")
-            else:
-                print(f"Cell ({row}, {col}) is not adjacent or not empty")
+            except Exception as e:
+                print(e)
 
             # Clear the selected piece regardless of move success
             self.game_manager.selected_piece = None
