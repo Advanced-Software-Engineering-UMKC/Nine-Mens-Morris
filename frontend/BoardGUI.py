@@ -2,7 +2,7 @@ import pygame as pg
 
 from backend.Board import Board
 from backend.Cell import Color
-
+import sys
 vec2 = pg.math.Vector2 
 
 
@@ -128,6 +128,11 @@ class BoardGUI:
             else:
                 # Movement phase
                 self.handle_moment_phase(row , col)
+            
+            if self.game_manager.check_game_over():
+                print('Game Over winner is',self.game_manager.check_game_over())
+                sys.exit()
+                
 
         # Right click - Deselect piece
         if mouse_buttons[2]:

@@ -11,7 +11,7 @@ class GameManager:
         self.turn = Color.WHITE
         self.selected_piece = None
         self.open_moves = self.board.get_valid_moves()
-        
+
         # Mill variables
         self.mills = [
             [(0, 0), (0, 3), (0, 6)],  # Horizontal mills
@@ -35,7 +35,6 @@ class GameManager:
         ]
         self.waiting_for_removal = False
         self.removable_pieces = []
-
 
     def get_board(self, row=-1, col=-1):
         if row == -1 or col == -1:
@@ -113,11 +112,47 @@ class GameManager:
 
     def can_fly(self, player):
         can_fly = False
-        if player == Color.WHITE and len(self.pieces.white_pieces) <= 3:
+        if player == Color.WHITE and self.pieces.count_white_remains == 3:
             can_fly = True
-        elif player == Color.BLACK and len(self.pieces.black_pieces) <= 3:
+        elif player == Color.BLACK and self.pieces.count_black_remains == 3:
             can_fly = True
         return can_fly
+
+    def get_movable_options(self, row, col):
+        # calculate the available adjacent positions
+        if self.can_fly(self.turn):
+            # if can fly, return all open positions
+            return self.open_moves
+        else:
+            # if more than 3 pieces left, user can only move to empty adjacent positions
+            return self.find_empty_adjacents(row, col)
+
+    # Returns winner if game is over, or None
+    def check_game_over(self):
+        my_pieces = []
+
+        # Check if opponent has 2 pieces left, if so then current player wins
+        if self.pieces.all_pieces_placed():
+            if self.turn == Color.WHITE:
+                if self.pieces.count_black_remains == 2:
+                    return self.turn
+                my_pieces = self.pieces.white_pieces
+            elif self.turn == Color.BLACK:
+                if self.pieces.count_white_remains == 2:
+                    return self.turn
+                my_pieces = self.pieces.black_pieces
+
+            # Check if the current player don't have any valid movable options
+            for piece in my_pieces:
+                movable_options = self.get_movable_options(piece.position[0], piece.position[1])
+                if movable_options is not None and len(movable_options) > 0:
+                    # At-least found one movable option
+                    return None
+        else:
+            return None
+
+        # Return opponent as Winner
+        return Color.BLACK if self.get_turn() == Color.WHITE else Color.WHITE
 
     '''
     the select_piece func should return the available empty adjacent positions to where the piece can be moved 
@@ -131,34 +166,24 @@ class GameManager:
         self.selected_piece = (row, col)
 
         if self.turn == cell.get_state():
-            # calculate the available adjacent positions
-            if self.can_fly(self.turn):
-                # if can fly, return all open positions
-                return self.open_moves
-            else:
-                # if more than 3 pieces left, user can only move to empty adjacent positions
-                return self.find_empty_adjacents(row, col)
+            return self.get_movable_options(row, col)
 
         self.selected_piece = None
         raise Exception("SelectionError -- Invalid piece selection")
 
-
     def move_piece(self, target_row, target_col):
         if not self.selected_piece:
-            Exception("MoveError -- No piece selected")
+            raise Exception("MoveError -- No piece selected")
 
         start_row, start_col = self.selected_piece
 
         # Validate the target position is empty and adjacent
         if self.board.check_position(target_row, target_col) != Color.EMPTY:
-            Exception("MoveError -- Target position is not empty")
+            raise Exception("MoveError -- Target position is not empty")
 
         if not self.can_fly(self.turn):
-            print("DEBUG - cannot fly")
             if not self.is_adjacent_and_empty(start_row, start_col, target_row, target_col):
-                Exception("MoveError -- Invalid move, pieces can only move to adjacent positions")
-        else:
-            print("DEBUG - can fly")
+                raise Exception("MoveError -- Invalid move, pieces can only move to adjacent positions")
 
         # Perform the move
         self.board.set_position(target_row, target_col, self.turn.name.lower())
@@ -173,62 +198,69 @@ class GameManager:
         return True
 
     def get_piece_at(self, row, col):
-        return self.board.board[row][col]  
-    
-    # def is_mill_formed(self, row, col, turn):
+        return self.board.board[row][col]
+
+        # def is_mill_formed(self, row, col, turn):
+
     #     for mill in self.mills:
     #         if (row, col) in mill:
     #             # Check if all three positions in this mill belong to the current player
     #             first = self.get_piece_at(r, c)
-                
+
     #             if all(self.get_piece_at(r, c) == turn for r, c in mill):
     #                 return True
     #     return False
-
 
     def is_mill_formed(self, row, col):
         for mill in self.mills:
             if (row, col) in mill:
                 # Create an empty list to store comparison results
                 pieces_in_mill = []
-                
+
                 # Loop through each position in the mill
                 for r, c in mill:
                     piece_at_position = self.get_piece_at(r, c)  # Get the piece at the mill position
-                    is_current_turn_piece = (piece_at_position.get_state().name == self.get_turn().name)  # Check if it's the current player's turn
+                    is_current_turn_piece = (
+                                piece_at_position.get_state().name == self.get_turn().name)  # Check if it's the current player's turn
                     pieces_in_mill.append(is_current_turn_piece)  # Append the result (True/False) to the list
-                
+
                 # Now use 'all' to check if all the values in the list are True
                 if all(pieces_in_mill):
                     return True
 
         return False
-    
+
     def remove_piece_mill(self, row, col):
         self.open_moves.append((row, col))
         self.board.set_position(row, col, Color.EMPTY)
+
+        if self.turn == Color.WHITE:
+            self.pieces.decrease_black_piece_count()
+        else:
+            self.pieces.decrease_white_piece_count()
+
         self.waiting_for_removal = False  # Reset the removal state
         self.removable_pieces = []  # Clear the list of removable pieces
         self.end_turn()  # End the turn after removal
         self.end_turn()  # swap the turn to opponent
         return True
-    
-    def remove_opponent_piece(self , pieces_on_board):
+
+    def remove_opponent_piece(self, pieces_on_board):
         opponent_turn = Color.BLACK if self.get_turn() == Color.WHITE else Color.WHITE
-        
+
         # Get all opponent's pieces
         opponent_pieces = [
             (row, col) for (row, col), piece_turn in pieces_on_board.items()
             if piece_turn == opponent_turn
         ]
-        
+
         # Try to remove non-mill pieces first - logic is wrong but it works as user select write piece
         opponent_pieces_non_mill = [(row, col) for row, col in opponent_pieces if not self.is_mill_formed(row, col)]
-        
+
         if opponent_pieces_non_mill:
             print('Select a piece to remove from these non-mill options: ', opponent_pieces_non_mill)
             self.waiting_for_removal = True
-            self.removable_pieces = opponent_pieces_non_mill  
+            self.removable_pieces = opponent_pieces_non_mill
             return True
 
         # If no non-mill pieces, remove a mill piece
@@ -237,21 +269,21 @@ class GameManager:
             self.waiting_for_removal = True
             self.removable_pieces = opponent_pieces
             return True
-        
+
         if opponent_pieces:
             print('you can only select non mill peices sice opponent has it...')
-        
-        return False 
 
-    def handle_piece_placement(self, row, col , pieces_on_board):
+        return False
+
+    def handle_piece_placement(self, row, col, pieces_on_board):
         is_piece_placed = self.place_piece(row, col)
         if is_piece_placed == 1:
             pieces_on_board[(row, col)] = self.get_turn()  # Add piece to the board
             # self.draw_board()  
-            
+
             # Check if the piece forms a mill
             if self.is_mill_formed(row, col):
                 print("Mill formed! Remove opponent's piece.")
                 self.remove_opponent_piece(pieces_on_board)
-                
-            self.end_turn()  
+
+            self.end_turn()

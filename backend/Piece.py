@@ -32,6 +32,8 @@ class Pieces:
 
         self.count_white_placed = 0
         self.count_black_placed = 0
+        self.count_white_remains = 0
+        self.count_black_remains = 0
         self.size = total
 
     # delete this if it doesn't get used -- support for frontend/testing
@@ -49,9 +51,11 @@ class Pieces:
     # private methods for increasing piece counts
     def __increase_count_white_placed(self):
         self.count_white_placed += 1
+        self.count_white_remains += 1
 
     def __increase_count_black_placed(self):
         self.count_black_placed += 1
+        self.count_black_remains += 1
 
     # only all_pieces_placed is public!
     def __all_white_placed(self):
@@ -82,3 +86,9 @@ class Pieces:
         self.black_pieces[self.count_black_placed].set_position((row, column))
         self.__increase_count_black_placed()
         return 1
+
+    def decrease_black_piece_count(self):
+        self.count_black_remains = self.count_black_remains - 1
+
+    def decrease_white_piece_count(self):
+        self.count_white_remains = self.count_white_remains - 1
