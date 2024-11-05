@@ -132,21 +132,24 @@ class GameManager:
         my_pieces = []
 
         # Check if opponent has 2 pieces left, if so then current player wins
-        if self.turn == Color.WHITE:
-            if self.pieces.count_black_remains == 2:
-                return self.turn
-            my_pieces = self.pieces.white_pieces
-        elif self.turn == Color.BLACK:
-            if self.pieces.count_white_remains == 2:
-                return self.turn
-            my_pieces = self.pieces.black_pieces
+        if self.pieces.all_pieces_placed():
+            if self.turn == Color.WHITE:
+                if self.pieces.count_black_remains == 2:
+                    return self.turn
+                my_pieces = self.pieces.white_pieces
+            elif self.turn == Color.BLACK:
+                if self.pieces.count_white_remains == 2:
+                    return self.turn
+                my_pieces = self.pieces.black_pieces
 
-        # Check if the current player don't have any valid movable options
-        for piece in my_pieces:
-            movable_options = self.get_movable_options(piece.position[0], piece.position[1])
-            if movable_options is not None and len(movable_options) > 0:
-                # At-least found one movable option
-                return None
+            # Check if the current player don't have any valid movable options
+            for piece in my_pieces:
+                movable_options = self.get_movable_options(piece.position[0], piece.position[1])
+                if movable_options is not None and len(movable_options) > 0:
+                    # At-least found one movable option
+                    return None
+        else:
+            return None
 
         # Return opponent as Winner
         return Color.BLACK if self.get_turn() == Color.WHITE else Color.WHITE
@@ -170,17 +173,17 @@ class GameManager:
 
     def move_piece(self, target_row, target_col):
         if not self.selected_piece:
-            Exception("MoveError -- No piece selected")
+            raise Exception("MoveError -- No piece selected")
 
         start_row, start_col = self.selected_piece
 
         # Validate the target position is empty and adjacent
         if self.board.check_position(target_row, target_col) != Color.EMPTY:
-            Exception("MoveError -- Target position is not empty")
+            raise Exception("MoveError -- Target position is not empty")
 
         if not self.can_fly(self.turn):
             if not self.is_adjacent_and_empty(start_row, start_col, target_row, target_col):
-                Exception("MoveError -- Invalid move, pieces can only move to adjacent positions")
+                raise Exception("MoveError -- Invalid move, pieces can only move to adjacent positions")
 
         # Perform the move
         self.board.set_position(target_row, target_col, self.turn.name.lower())
