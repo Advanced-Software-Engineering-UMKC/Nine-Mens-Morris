@@ -147,6 +147,7 @@ class GameManager:
         for piece in my_pieces:
             movable_options = self.get_movable_options(piece[0], piece[1])
             if movable_options is not None and len(movable_options) > 0:
+                # At-least found one movable option
                 return None
 
         return opponent
