@@ -75,7 +75,7 @@ class TestGameManager:
         assert game_manager.get_turn() != turn
 
     def test_move_piece(self, game_manager):
-        # placing al 9 pieces for both players
+        # placing all 9 pieces for both players
         game_manager = place_test_pieces(game_manager)
 
         try:
@@ -87,3 +87,30 @@ class TestGameManager:
             assert game_manager.move_piece(0, 3)
         except Exception as e:
             pytest.fail(f"Test failed due to unexpected exception: {e}")
+
+    def test_fly_piece(self, game_manager):
+        # placing all 9 pieces for both players
+        game_manager = place_test_pieces(game_manager)
+
+        # decreasing the black piece count to 3
+        for i in range(6):
+            game_manager.pieces.decrease_black_piece_count()
+
+        game_manager.end_turn()
+
+        assert game_manager.can_fly(game_manager.turn)
+
+    def test_end_game(self, game_manager):
+        # placing all 9 pieces for both players
+        game_manager = place_test_pieces(game_manager)
+
+        # decreasing the black piece count to 3
+        for i in range(6):
+            game_manager.pieces.decrease_black_piece_count()
+
+        assert game_manager.check_game_over() is None
+
+        # decreasing the black piece count to 2
+        game_manager.pieces.decrease_black_piece_count()
+
+        assert game_manager.check_game_over() is Color.WHITE
