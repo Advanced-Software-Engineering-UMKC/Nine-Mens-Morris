@@ -112,9 +112,9 @@ class GameManager:
 
     def can_fly(self, player):
         can_fly = False
-        if player == Color.WHITE and len(self.pieces.white_pieces) <= 3:
+        if player == Color.WHITE and self.pieces.count_white_remains == 3:
             can_fly = True
-        elif player == Color.BLACK and len(self.pieces.black_pieces) <= 3:
+        elif player == Color.BLACK and self.pieces.count_black_remains == 3:
             can_fly = True
         return can_fly
 
@@ -127,19 +127,17 @@ class GameManager:
             # if more than 3 pieces left, user can only move to empty adjacent positions
             return self.find_empty_adjacents(row, col)
 
-    # returns winner if game is over, or None
+    # Returns winner if game is over, or None
     def check_game_over(self):
         my_pieces = []
-        opponent = Color.WHITE
 
         # Check if opponent has 2 pieces left, if so then current player wins
         if self.turn == Color.WHITE:
-            opponent = Color.BLACK
-            if len(self.pieces.black_pieces) == 2:
+            if self.pieces.count_black_remains == 2:
                 return self.turn
             my_pieces = self.pieces.white_pieces
         elif self.turn == Color.BLACK:
-            if len(self.pieces.white_pieces) == 2:
+            if self.pieces.count_white_remains == 2:
                 return self.turn
             my_pieces = self.pieces.black_pieces
 
@@ -150,13 +148,13 @@ class GameManager:
                 # At-least found one movable option
                 return None
 
-        return opponent
+        # Return opponent as Winner
+        return Color.BLACK if self.get_turn() == Color.WHITE else Color.WHITE
 
     '''
     the select_piece func should return the available empty adjacent positions to where the piece can be moved 
     or throw exception if it should be selectable
     '''
-
     def select_piece(self, row, col):
         if not self.placement_complete():
             raise Exception("SelectionError -- Cannot select pieces during placement phase")
@@ -232,6 +230,12 @@ class GameManager:
     def remove_piece_mill(self, row, col):
         self.open_moves.append((row, col))
         self.board.set_position(row, col, Color.EMPTY)
+
+        if self.turn == Color.WHITE:
+            self.pieces.decrease_black_piece_count()
+        else:
+            self.pieces.decrease_white_piece_count()
+
         self.waiting_for_removal = False  # Reset the removal state
         self.removable_pieces = []  # Clear the list of removable pieces
         self.end_turn()  # End the turn after removal
