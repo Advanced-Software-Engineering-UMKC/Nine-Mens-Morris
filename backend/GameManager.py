@@ -276,7 +276,6 @@ class GameManager:
 
         # Try to remove non-mill pieces first - logic is wrong but it works as user select write piece
         opponent_pieces_non_mill = [(row, col) for row, col in opponent_pieces if not self.does_opp_mill_exist(row, col)]
-        print(opponent_pieces_non_mill)
 
         if opponent_pieces_non_mill:
             print('Select a piece to remove from these non-mill options: ', opponent_pieces_non_mill)

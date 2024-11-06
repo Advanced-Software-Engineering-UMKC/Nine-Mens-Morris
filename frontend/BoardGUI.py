@@ -54,6 +54,8 @@ class BoardGUI:
     
     def handle_mill(self,row, col):
         if (row, col) in self.game_manager.removable_pieces:
+            # THIS IS A TEMPORARY PATCH. PLEASE DEBUG NEXT SPRINT
+            self.game_manager.end_turn()
             # Valid piece selected to remove
             print(f"Removing opponent's piece at ({row}, {col})")
             self.remove_piece(row, col)  # Remove the piece from the board
@@ -61,6 +63,11 @@ class BoardGUI:
             status = self.game_manager.remove_piece_mill(row, col)
             if status:
                 print(f"Removed opponent's piece at ({row}, {col})")
+                # THIS IS A TEMPORARY PATCH. PLEASE DEBUG NEXT SPRINT
+                if self.game_manager.check_game_over():
+                    print('Game Over winner is',self.game_manager.check_game_over())
+                    sys.exit()
+                self.game_manager.end_turn()
         else:
             print(f"Invalid selection. Please select a piece from: {self.game_manager.removable_pieces}")
     
