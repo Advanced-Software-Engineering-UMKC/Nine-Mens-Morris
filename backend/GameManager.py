@@ -26,10 +26,10 @@ class GameManager:
             # Vertical mills
             [(0, 0), (3, 0), (6, 0)],
             [(1, 1), (3, 1), (5, 1)],
-            [(2, 2), (4, 2), (5, 2)],
+            [(2, 2), (3, 2), (4, 2)],
             [(0, 3), (1, 3), (2, 3)],
             [(4, 3), (5, 3), (6, 3)],
-            [(2, 4), (4, 4), (5, 4)],
+            [(2, 4), (3, 4), (4, 4)],
             [(1, 5), (3, 5), (5, 5)],
             [(0, 6), (3, 6), (6, 6)]
         ]
@@ -227,7 +227,27 @@ class GameManager:
                 # Now use 'all' to check if all the values in the list are True
                 if all(pieces_in_mill):
                     return True
+        
+        return False
 
+    def does_opp_mill_exist(self, row, col):
+        opponent_turn = Color.BLACK if self.get_turn() == Color.WHITE else Color.WHITE
+        for mill in self.mills:
+            if (row, col) in mill:
+                # Create an empty list to store comparison results
+                pieces_in_mill = []
+
+                # Loop through each position in the mill
+                for r, c in mill:
+                    piece_at_position = self.get_piece_at(r, c)  # Get the piece at the mill position
+                    is_current_turn_piece = (
+                                piece_at_position.get_state().name == opponent_turn.name)  # Check if it's the current player's turn
+                    pieces_in_mill.append(is_current_turn_piece)  # Append the result (True/False) to the list
+
+                # Now use 'all' to check if all the values in the list are True
+                if all(pieces_in_mill):
+                    return True
+        
         return False
 
     def remove_piece_mill(self, row, col):
@@ -255,7 +275,8 @@ class GameManager:
         ]
 
         # Try to remove non-mill pieces first - logic is wrong but it works as user select write piece
-        opponent_pieces_non_mill = [(row, col) for row, col in opponent_pieces if not self.is_mill_formed(row, col)]
+        opponent_pieces_non_mill = [(row, col) for row, col in opponent_pieces if not self.does_opp_mill_exist(row, col)]
+        print(opponent_pieces_non_mill)
 
         if opponent_pieces_non_mill:
             print('Select a piece to remove from these non-mill options: ', opponent_pieces_non_mill)
