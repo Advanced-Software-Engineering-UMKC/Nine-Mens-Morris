@@ -1,12 +1,9 @@
 import sys
-
 import pygame as pg
-
 from backend.GameManager import GameManager
 from frontend.BoardGUI import BoardGUI
 
 WIN_SIZE = 500
-
 
 class GameGUI:
     def __init__(self):
@@ -30,6 +27,11 @@ class GameGUI:
                 pg.quit()
                 sys.exit()
 
+            # Check for mouse click events
+            elif event.type == pg.MOUSEBUTTONDOWN:
+                # Only run get_cell_clicked when a mouse button is clicked
+                self.board.get_cell_clicked()
+
     def run_game(self):
         self.board.build_board()
 
@@ -38,7 +40,6 @@ class GameGUI:
             self.draw_info()
             pg.display.update()
             self.clock.tick(60)
-            self.board.get_cell_clicked()  # this runs too much. reduce or face errors
 
     def draw_info(self):
         font = pg.font.Font(None, 36)
@@ -46,7 +47,7 @@ class GameGUI:
             f"Turn: {self.gameManager.turn.name}", True, (255, 255, 255)
         )
         white_pieces_text = font.render(
-            f"White Pieces Left: {self.gameManager.get_pieces_left()['white']}",
+            f"White Pieces Left: {self.gameManager.get_pieces_left()['white']}", 
             True,
             (255, 255, 255),
         )

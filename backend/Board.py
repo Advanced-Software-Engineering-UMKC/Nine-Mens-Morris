@@ -1,11 +1,42 @@
 # import pygame as pg
-from backend.Cell import Cell, CellType
+from backend.Cell import Cell, Color
 
 
 class Board:
     def __init__(self, size):
         self.board_size = size
         self.create_initial_board(size)
+        self.adjacent_positions_map = {
+            # Outer square
+            (0, 0): [(0, 3), (3, 0)],
+            (0, 3): [(0, 0), (0, 6), (1, 3)],
+            (0, 6): [(0, 3), (3, 6)],
+            (3, 0): [(0, 0), (3, 1), (6, 0)],
+            (3, 6): [(0, 6), (3, 5), (6, 6)],
+            (6, 0): [(3, 0), (6, 3)],
+            (6, 3): [(6, 0), (6, 6), (5, 3)],
+            (6, 6): [(6, 3), (3, 6)],
+
+            # Middle square
+            (1, 1): [(1, 3), (3, 1)],
+            (1, 3): [(1, 1), (1, 5), (0, 3), (2, 3)],
+            (1, 5): [(1, 3), (3, 5)],
+            (3, 1): [(1, 1), (5, 1), (3, 0), (3, 2)],
+            (3, 5): [(1, 5), (5, 5), (3, 4), (3, 6)],
+            (5, 1): [(3, 1), (5, 3)],
+            (5, 3): [(5, 1), (5, 5), (6, 3), (4, 3)],
+            (5, 5): [(5, 3), (3, 5)],
+
+            # Inner square
+            (2, 2): [(2, 3), (3, 2)],
+            (2, 3): [(2, 2), (2, 4), (1, 3)],
+            (2, 4): [(2, 3), (3, 4)],
+            (3, 2): [(2, 2), (4, 2), (3, 1), (3, 3)],
+            (3, 4): [(2, 4), (4, 4), (3, 3), (3, 5)],
+            (4, 2): [(3, 2), (4, 3)],
+            (4, 3): [(4, 2), (4, 4), (5, 3)],
+            (4, 4): [(4, 3), (3, 4)]
+        }
 
     def create_initial_board(self, size):
         indices_array = []
@@ -44,7 +75,7 @@ class Board:
         for index, row in enumerate(self.board):
             valid = self.init_valid_moves(index)
             for cell in valid:
-                self.board[index][cell].set_state(CellType.EMPTY)
+                self.board[index][cell].set_state(Color.EMPTY)
                 self.valid_moves.append((index, cell))
 
     def get_valid_moves(self):
@@ -56,7 +87,12 @@ class Board:
 
     def set_position(self, row, column, color):
         if color == "white":
-            self.board[row][column].set_state(CellType.WHITE)
+            self.board[row][column].set_state(Color.WHITE)
+        elif color == "black":
+            self.board[row][column].set_state(Color.BLACK)
         else:
-            self.board[row][column].set_state(CellType.BLACK)
+            self.board[row][column].set_state(Color.EMPTY)
         return 1
+
+    def get_cell(self, row, column):
+        return self.board[row][column]
