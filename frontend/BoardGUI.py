@@ -50,6 +50,7 @@ class BoardGUI:
         # Remove the piece from the internal structure
         if (row, col) in self.pieces_on_board:
             del self.pieces_on_board[(row, col)]
+        
 
     
     def handle_mill(self,row, col):

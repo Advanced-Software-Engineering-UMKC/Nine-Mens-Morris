@@ -1,13 +1,14 @@
 # import pygame as pg
 from backend.Board import Board
-from backend.Piece import Pieces
 from backend.Cell import Color
+from backend.Player import Player
 
 
 class GameManager:
     def __init__(self, size, pieces):
         self.board = Board(size)
-        self.pieces = Pieces(pieces)
+        self.player_1 = Player(pieces, Color.WHITE)
+        self.player_2 = Player(pieces, Color.BLACK)
         self.turn = Color.WHITE
         self.selected_piece = None
         self.open_moves = self.board.get_valid_moves()
@@ -48,8 +49,9 @@ class GameManager:
         return self.turn.name.lower()
 
     def placement_complete(self):
-        return self.pieces.all_pieces_placed()
-
+        return self.player_1.all_of_players_pieces_placed() and \
+               self.player_2.all_of_players_pieces_placed()
+    
     def place_piece(self, row, column):
         if (row, column) in self.open_moves:
             if self.board.check_position(row, column) != Color.EMPTY:
@@ -58,9 +60,9 @@ class GameManager:
 
             is_piece_placed = 0
             if self.turn == Color.WHITE:
-                is_piece_placed = self.pieces.set_white_piece(row, column)
+                is_piece_placed = self.player_1.set_players_piece(row, column)
             else:
-                is_piece_placed = self.pieces.set_black_piece(row, column)
+                is_piece_placed = self.player_2.set_players_piece(row, column)
 
             if is_piece_placed == 1:
                 self.board.set_position(row, column, self.turn.name.lower())
@@ -76,8 +78,8 @@ class GameManager:
     def get_pieces_left(self):
         # dictionary for black and white pieces left to be placed
         return {
-            "white": self.pieces.size - self.pieces.count_white_placed,
-            "black": self.pieces.size - self.pieces.count_black_placed,
+            "white": self.player_1.starting_piece_count - self.player_1.pieces_placed,
+            "black": self.player_2.starting_piece_count - self.player_2.pieces_placed,
         }
 
     def end_turn(self):
@@ -109,18 +111,26 @@ class GameManager:
                 empty_adjacent_positions.append((row, col))
 
         return empty_adjacent_positions
-
+    
     def can_fly(self, player):
-        can_fly = False
-        if player == Color.WHITE and self.pieces.count_white_remains == 3:
-            can_fly = True
-        elif player == Color.BLACK and self.pieces.count_black_remains == 3:
-            can_fly = True
-        return can_fly
+        if len(player.pieces) == 3:
+            return True
+    
+    def get_current_player(self):
+        if self.turn == Color.WHITE:
+            return self.player_1
+        else:
+            return self.player_2
+        
+    def get_opponent(self):
+        if self.turn == Color.WHITE:
+            return self.player_2
+        else:
+            return self.player_1
 
     def get_movable_options(self, row, col):
         # calculate the available adjacent positions
-        if self.can_fly(self.turn):
+        if self.can_fly(self.get_current_player()):
             # if can fly, return all open positions
             return self.open_moves
         else:
@@ -129,21 +139,17 @@ class GameManager:
 
     # Returns winner if game is over, or None
     def check_game_over(self):
-        my_pieces = []
+        current_player_pieces = []
+        current_player = self.get_current_player()
+        opponent = self.get_opponent()
 
-        # Check if opponent has 2 pieces left, if so then current player wins
-        if self.pieces.all_pieces_placed():
-            if self.turn == Color.WHITE:
-                if self.pieces.count_black_remains == 2:
-                    return self.turn
-                my_pieces = self.pieces.white_pieces
-            elif self.turn == Color.BLACK:
-                if self.pieces.count_white_remains == 2:
-                    return self.turn
-                my_pieces = self.pieces.black_pieces
+        if self.placement_complete():
+            if len(opponent.pieces) == 2:
+                return self.turn
+            current_player_pieces = current_player.pieces
 
             # Check if the current player don't have any valid movable options
-            for piece in my_pieces:
+            for piece in current_player_pieces:
                 movable_options = self.get_movable_options(piece.position[0], piece.position[1])
                 if movable_options is not None and len(movable_options) > 0:
                     # At-least found one movable option
@@ -181,13 +187,21 @@ class GameManager:
         if self.board.check_position(target_row, target_col) != Color.EMPTY:
             raise Exception("MoveError -- Target position is not empty")
 
-        if not self.can_fly(self.turn):
+        if not self.can_fly(self.get_current_player()):
             if not self.is_adjacent_and_empty(start_row, start_col, target_row, target_col):
                 raise Exception("MoveError -- Invalid move, pieces can only move to adjacent positions")
 
         # Perform the move
         self.board.set_position(target_row, target_col, self.turn.name.lower())
         self.board.set_position(start_row, start_col, Color.EMPTY)
+
+        # update piece position in the player object
+        current_player = self.get_current_player()
+        for piece in current_player.pieces:
+            if piece.position == (start_row, start_col):
+                piece.set_position((target_row, target_col))
+                break
+
         # self.board.board[start_row][start_col] = None
 
         # removing the new position from open move and adding the previous position to it
@@ -253,11 +267,9 @@ class GameManager:
     def remove_piece_mill(self, row, col):
         self.open_moves.append((row, col))
         self.board.set_position(row, col, Color.EMPTY)
+        opponent = self.get_opponent()
 
-        if self.turn == Color.WHITE:
-            self.pieces.decrease_black_piece_count()
-        else:
-            self.pieces.decrease_white_piece_count()
+        opponent.remove_piece(row, col)
 
         self.waiting_for_removal = False  # Reset the removal state
         self.removable_pieces = []  # Clear the list of removable pieces
@@ -266,7 +278,7 @@ class GameManager:
         return True
 
     def remove_opponent_piece(self, pieces_on_board):
-        opponent_turn = Color.BLACK if self.get_turn() == Color.WHITE else Color.WHITE
+        opponent_turn = self.get_opponent().get_color()
 
         # Get all opponent's pieces
         opponent_pieces = [
