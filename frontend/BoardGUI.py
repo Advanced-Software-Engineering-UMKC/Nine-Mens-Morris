@@ -20,7 +20,7 @@ class BoardGUI:
             "resources/pieces/white_piece.png", [self.cell_size] * 2
         )
         self.game_manager = gameManager
-        self.board = Board(board_size)
+        self.board = gameManager.board
         self.count = 0
         self.win_size = WIN_SIZE
 
@@ -94,7 +94,7 @@ class BoardGUI:
                     # Check if the move forms a mill
                     if self.game_manager.is_mill_formed(row, col):
                         print("Mill formed! Remove opponent's piece.")
-                        self.game_manager.remove_opponent_piece(self.board.pieces_on_board)
+                        self.game_manager.remove_opponent_piece()
 
                     self.game_manager.end_turn()  # End turn after successful move
                 else:
@@ -122,7 +122,7 @@ class BoardGUI:
         if mouse_buttons[0]:
             if not self.game_manager.placement_complete():
                 # Handle piece placement
-                self.game_manager.handle_piece_placement(row, col , self.board.pieces_on_board)
+                self.game_manager.handle_piece_placement(row, col)
                 self.draw_board()
                 return current_cell  # Return the current cell for left click
             else:

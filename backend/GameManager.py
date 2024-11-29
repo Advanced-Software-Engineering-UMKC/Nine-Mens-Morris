@@ -15,6 +15,7 @@ class GameManager:
         self.turn = Color.WHITE
         self.selected_piece = None
         self.open_moves = self.board.get_valid_moves()
+        self.use_computer_opponent = False
 
         # Mill variables
         self.mills = [
@@ -266,12 +267,12 @@ class GameManager:
         self.end_turn()  # swap the turn to opponent
         return True
 
-    def remove_opponent_piece(self, pieces_on_board):
+    def remove_opponent_piece(self):
         opponent_turn = self.get_opponent().get_color()
 
         # Get all opponent's pieces
         opponent_pieces = [
-            (row, col) for (row, col), piece_turn in pieces_on_board.items()
+            (row, col) for (row, col), piece_turn in self.board.pieces_on_board.items()
             if piece_turn == opponent_turn
         ]
 
@@ -296,25 +297,32 @@ class GameManager:
 
         return False
 
-    def handle_piece_placement(self, row, col, pieces_on_board):
+    def handle_piece_placement(self, row, col):
         is_piece_placed = self.place_piece(row, col)
         if is_piece_placed == 1:
-            pieces_on_board[(row, col)] = self.get_turn()  # Add piece to the board
+
+            
+            self.board.pieces_on_board[(row, col)] = self.get_turn()  # Add piece to the board
             # self.draw_board()  
 
             # Check if the piece forms a mill
             if self.is_mill_formed(row, col):
                 print("Mill formed! Remove opponent's piece.")
-                self.remove_opponent_piece(pieces_on_board)
+                self.remove_opponent_piece()
 
             self.end_turn()
+
+    def set_use_computer_opponent(self, use_computer_opponent):
+        self.use_computer_opponent = use_computer_opponent
+        self.player_2 = ComputerPlayer(self.player_2.starting_piece_count, Color.BLACK)
 
     def handle_computer_turn(self):
         if self.placement_complete():
             self.computer_player.make_move(self)
             self.end_turn()
         else:
-            board = self.get_board()
-            selected_piece = self.computer_player.decide_piece_placement(self, valid_moves=self.open_moves)
-            self.handle_piece_placement(selected_piece[0], selected_piece[1], board.pieces_on_board)
+            selected_piece = self.player_2.decide_piece_placement(self.open_moves)
+            self.handle_piece_placement(selected_piece[0], selected_piece[1])
             self.end_turn()
+
+

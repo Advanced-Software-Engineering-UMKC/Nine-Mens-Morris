@@ -1,3 +1,4 @@
+import random
 from backend.Player import Player
 
 class ComputerPlayer(Player):
@@ -6,4 +7,7 @@ class ComputerPlayer(Player):
 
     def decide_piece_placement(self, valid_moves):
         # Place piece in random empty cell
-        random_cell = valid_moves[0]
+        # pick random number from 0 to len(valid_moves) - 1
+        random_index = random.randint(0, len(valid_moves) - 1)
+        random_cell = valid_moves[random_index]
+        return random_cell

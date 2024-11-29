@@ -45,6 +45,7 @@ class GameGUI:
                         return
                     elif event.key == pg.K_2:
                         self.use_computer_opponent = True
+                        self.gameManager.set_use_computer_opponent(self.use_computer_opponent)
                         return
 
     def check_events(self):
