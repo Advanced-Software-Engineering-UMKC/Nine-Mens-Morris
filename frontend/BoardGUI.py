@@ -143,9 +143,8 @@ class BoardGUI:
         return None
     
     def handle_computer_move(self): 
-        # if self.game_manager.waiting_for_removal:
-        #     self.handle_mill(row, col)
-        #     return
+        if self.game_manager.waiting_for_removal:
+            return
         if not self.game_manager.placement_complete():
             # Handle piece placement
             self.game_manager.handle_computer_turn()
