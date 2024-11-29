@@ -329,5 +329,5 @@ class GameManager:
             target_cell = self.player_2.decide_move_target(open_moves)
             self.move_piece(target_cell[0], target_cell[1])
         else:
-            selected_piece = self.player_2.decide_piece_placement(self.open_moves)
+            selected_piece = self.player_2.decide_piece_placement(self.open_moves, self.mills)
             self.handle_piece_placement(selected_piece[0], selected_piece[1])
