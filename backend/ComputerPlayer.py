@@ -23,8 +23,6 @@ class ComputerPlayer(Player):
         return random_cell
     
     def attempt_to_find_mill(self, possible_mills, valid_moves):
-        piece_in_mill = None
-
         # add to piece_to_check the pieces that positions is not (-1, -1)
         placed_pieces_to_check = [piece.position for piece in self.pieces if piece.position != (-1, -1)]
 

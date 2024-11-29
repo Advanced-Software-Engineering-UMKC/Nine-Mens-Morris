@@ -314,7 +314,8 @@ class GameManager:
             # Check if the piece forms a mill
             if self.is_mill_formed(row, col):
                 print("Mill formed! Remove opponent's piece.")
-                self.remove_opponent_piece()
+                if self.use_computer_opponent and self.get_turn() == Color.WHITE or not self.use_computer_opponent:
+                    self.remove_opponent_piece()
 
             self.end_turn()
 
@@ -324,10 +325,13 @@ class GameManager:
 
     def handle_computer_turn(self):
         if self.placement_complete():
-            selected_piece = self.player_2.decide_piece_to_move()
-            open_moves = self.select_piece(selected_piece.position[0], selected_piece.position[1])
-            target_cell = self.player_2.decide_move_target(open_moves)
-            self.move_piece(target_cell[0], target_cell[1])
+            for piece in self.player_2.pieces:
+                open_moves = self.get_movable_options(piece.position[0], piece.position[1])
+                if len(open_moves) > 0:
+                    target_cell = self.player_2.decide_move_target(open_moves)
+                    self.selected_piece = piece.position
+                    self.move_piece(target_cell[0], target_cell[1])
+                    return
         else:
             selected_piece = self.player_2.decide_piece_placement(self.open_moves, self.mills)
             self.handle_piece_placement(selected_piece[0], selected_piece[1])
