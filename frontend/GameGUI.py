@@ -70,7 +70,7 @@ class GameGUI:
             pg.display.update()
             self.clock.tick(60)
             if self.use_computer_opponent and self.gameManager.turn == Color.BLACK:
-                self.handle_computer_move()
+                self.board.handle_computer_move()
 
     def draw_info(self):
         font = pg.font.Font(None, 36)
@@ -95,9 +95,6 @@ class GameGUI:
         self.screen.blit(turn_text, (10, WIN_SIZE + 10))
         self.screen.blit(white_pieces_text, (200, WIN_SIZE + 10))
         self.screen.blit(black_pieces_text, (200, WIN_SIZE + 40))
-
-    def handle_computer_move(self):
-        self.gameManager.handle_computer_turn()
 
 def main():
     game = GameGUI()

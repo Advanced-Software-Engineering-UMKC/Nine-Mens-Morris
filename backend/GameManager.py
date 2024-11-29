@@ -301,7 +301,7 @@ class GameManager:
         is_piece_placed = self.place_piece(row, col)
         if is_piece_placed == 1:
 
-            
+
             self.board.pieces_on_board[(row, col)] = self.get_turn()  # Add piece to the board
             # self.draw_board()  
 
@@ -323,6 +323,5 @@ class GameManager:
         else:
             selected_piece = self.player_2.decide_piece_placement(self.open_moves)
             self.handle_piece_placement(selected_piece[0], selected_piece[1])
-            self.end_turn()
 
 

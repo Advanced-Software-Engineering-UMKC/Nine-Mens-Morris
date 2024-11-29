@@ -141,6 +141,17 @@ class BoardGUI:
                 self.game_manager.selected_piece = None
 
         return None
+    
+    def handle_computer_move(self): 
+        # if self.game_manager.waiting_for_removal:
+        #     self.handle_mill(row, col)
+        #     return
+        if not self.game_manager.placement_complete():
+            # Handle piece placement
+            self.game_manager.handle_computer_turn()
+            self.draw_board()
+            return
+        else:
+            # Movement phase
+            self.handle_moment_phase()
 
-    
-    
