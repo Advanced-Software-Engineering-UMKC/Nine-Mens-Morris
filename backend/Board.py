@@ -37,6 +37,7 @@ class Board:
             (4, 3): [(4, 2), (4, 4), (5, 3)],
             (4, 4): [(4, 3), (3, 4)]
         }
+        self.pieces_on_board = {}
 
     def create_initial_board(self, size):
         indices_array = []
@@ -84,6 +85,7 @@ class Board:
                 row_moves.append(cell)
         return row_moves
 
+    # 3 needs to be changed to support any board size
     def _get_non_middle_row_moves(self, row, middle):
         row_moves = []
         dist = abs(row - middle)
@@ -92,8 +94,6 @@ class Board:
             row_moves.append(offset + middle)
         return row_moves
     
-
-
     def set_valid_cells_to_empty(self):
         for index, row in enumerate(self.board):
             valid = self.init_valid_moves(index)
@@ -119,3 +119,8 @@ class Board:
 
     def get_cell(self, row, column):
         return self.board[row][column]
+    
+    def remove_piece(self, row, col):
+        # Remove the piece from the internal structure
+        if (row, col) in self.pieces_on_board:
+            del self.pieces_on_board[(row, col)]

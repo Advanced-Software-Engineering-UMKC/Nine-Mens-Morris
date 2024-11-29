@@ -4,8 +4,6 @@ class ComputerPlayer(Player):
     def __init__(self, max_piece_count, color):
         super().__init__(max_piece_count, color)
 
-    def place_piece(self, board):
+    def decide_piece_placement(self, valid_moves):
         # Place piece in random empty cell
-        empty_cells = board.get_empty_cells()
-        random_cell = empty_cells[0]
-        board.place_piece(random_cell, self.color)
+        random_cell = valid_moves[0]

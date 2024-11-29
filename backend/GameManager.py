@@ -263,6 +263,7 @@ class GameManager:
         self.waiting_for_removal = False  # Reset the removal state
         self.removable_pieces = []  # Clear the list of removable pieces
         self.end_turn()  # End the turn after removal
+        self.end_turn()  # swap the turn to opponent
         return True
 
     def remove_opponent_piece(self, pieces_on_board):
@@ -313,5 +314,7 @@ class GameManager:
             self.computer_player.make_move(self)
             self.end_turn()
         else:
-            self.computer_player.place_piece(self)
+            board = self.get_board()
+            selected_piece = self.computer_player.decide_piece_placement(self, valid_moves=self.open_moves)
+            self.handle_piece_placement(selected_piece[0], selected_piece[1], board.pieces_on_board)
             self.end_turn()

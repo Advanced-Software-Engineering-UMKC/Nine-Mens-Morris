@@ -23,12 +23,11 @@ class BoardGUI:
         self.board = Board(board_size)
         self.count = 0
         self.win_size = WIN_SIZE
-        self.pieces_on_board = {}
 
     def draw_board(self):
         self.game.screen.blit(self.board_image, (0, 0))
         # Draw all pieces currently on the board
-        for position, turn in self.pieces_on_board.items():
+        for position, turn in self.board.pieces_on_board.items():
             self.draw_piece(turn, (position[1] * self.cell_size, position[0] * self.cell_size))
 
 
@@ -46,20 +45,13 @@ class BoardGUI:
         else:
             self.game.screen.blit(self.white_piece_image, position)
 
-    def remove_piece(self, row, col):
-        # Remove the piece from the internal structure
-        if (row, col) in self.pieces_on_board:
-            del self.pieces_on_board[(row, col)]
-        
-
-    
     def handle_mill(self,row, col):
         if (row, col) in self.game_manager.removable_pieces:
             # THIS IS A TEMPORARY PATCH. PLEASE DEBUG NEXT SPRINT
             self.game_manager.end_turn()
             # Valid piece selected to remove
             print(f"Removing opponent's piece at ({row}, {col})")
-            self.remove_piece(row, col)  # Remove the piece from the board
+            self.board.remove_piece(row, col)  # Remove the piece from the board
             self.draw_board()  # Redraw the board after removal
             status = self.game_manager.remove_piece_mill(row, col)
             if status:
@@ -93,16 +85,16 @@ class BoardGUI:
                 if move_success:
                     print(f"Piece moved to ({row}, {col})")
                     # Remove the piece from the old position
-                    self.remove_piece(selected_row, selected_col)
+                    self.board.remove_piece(selected_row, selected_col)
 
                     # Add the piece to the new position
-                    self.pieces_on_board[(row, col)] = self.game_manager.turn
+                    self.board.pieces_on_board[(row, col)] = self.game_manager.turn
                     self.draw_board()  # Redraw board to show updated pieces
 
                     # Check if the move forms a mill
                     if self.game_manager.is_mill_formed(row, col):
                         print("Mill formed! Remove opponent's piece.")
-                        self.game_manager.remove_opponent_piece(self.pieces_on_board)
+                        self.game_manager.remove_opponent_piece(self.board.pieces_on_board)
 
                     self.game_manager.end_turn()  # End turn after successful move
                 else:
@@ -130,7 +122,7 @@ class BoardGUI:
         if mouse_buttons[0]:
             if not self.game_manager.placement_complete():
                 # Handle piece placement
-                self.game_manager.handle_piece_placement(row, col , self.pieces_on_board)
+                self.game_manager.handle_piece_placement(row, col , self.board.pieces_on_board)
                 self.draw_board()
                 return current_cell  # Return the current cell for left click
             else:
