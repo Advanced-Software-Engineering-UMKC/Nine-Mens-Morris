@@ -1,4 +1,6 @@
 import pygame as pg
+import time
+
 
 from backend.Board import Board
 from backend.Cell import Color
@@ -84,11 +86,11 @@ class BoardGUI:
                 move_success = self.game_manager.move_piece(row, col)
                 if move_success:
                     print(f"Piece moved to ({row}, {col})")
-                    # Remove the piece from the old position
-                    self.board.remove_piece(selected_row, selected_col)
+                    # # Remove the piece from the old position
+                    # self.board.remove_piece(selected_row, selected_col)
 
-                    # Add the piece to the new position
-                    self.board.pieces_on_board[(row, col)] = self.game_manager.turn
+                    # # Add the piece to the new position
+                    # self.board.pieces_on_board[(row, col)] = self.game_manager.turn
                     self.draw_board()  # Redraw board to show updated pieces
 
                     # Check if the move forms a mill
@@ -145,12 +147,9 @@ class BoardGUI:
     def handle_computer_move(self): 
         if self.game_manager.waiting_for_removal:
             return
-        if not self.game_manager.placement_complete():
-            # Handle piece placement
-            self.game_manager.handle_computer_turn()
-            self.draw_board()
-            return
-        else:
-            # Movement phase
-            self.handle_moment_phase()
+        self.game_manager.handle_computer_turn()
+        time.sleep(0.3)
+        self.draw_board()
+        if self.game_manager.placement_complete():
+            self.game_manager.end_turn()
 

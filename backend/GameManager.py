@@ -210,6 +210,12 @@ class GameManager:
         self.open_moves.remove((target_row, target_col))
 
         self.selected_piece = None
+
+                # Remove the piece from the old position
+        self.board.remove_piece(start_row, start_col)
+
+        # Add the piece to the new position
+        self.board.pieces_on_board[(target_row, target_col)] = self.turn
         return True
 
     def get_piece_at(self, row, col):
@@ -318,10 +324,10 @@ class GameManager:
 
     def handle_computer_turn(self):
         if self.placement_complete():
-            self.computer_player.make_move(self)
-            self.end_turn()
+            selected_piece = self.player_2.decide_piece_to_move()
+            open_moves = self.select_piece(selected_piece.position[0], selected_piece.position[1])
+            target_cell = self.player_2.decide_move_target(open_moves)
+            self.move_piece(target_cell[0], target_cell[1])
         else:
             selected_piece = self.player_2.decide_piece_placement(self.open_moves)
             self.handle_piece_placement(selected_piece[0], selected_piece[1])
-
-
