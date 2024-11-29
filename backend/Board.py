@@ -54,22 +54,45 @@ class Board:
 
         return self.board
 
-    # is this valid movement for 6, 9, and 12?
+    # def init_valid_moves(self, row):
+    #     rowMoves = []
+    #     middle = (self.board_size - 1) // 2
+    #     if row == middle:
+    #         i = 0
+    #         while i < self.board_size:
+    #             if i != middle:
+    #                 rowMoves.append(i)
+    #             i += 1
+    #     else:
+    #         dist = abs(row - middle)
+    #         for i in range(3):
+    #             offset = (i - 1) * dist
+    #             rowMoves.append(offset + middle)
+    #     return rowMoves
+    
     def init_valid_moves(self, row):
-        rowMoves = []
         middle = (self.board_size - 1) // 2
         if row == middle:
-            i = 0
-            while i < self.board_size:
-                if i != middle:
-                    rowMoves.append(i)
-                i += 1
+            return self._get_middle_row_moves(middle)
         else:
-            dist = abs(row - middle)
-            for i in range(3):
-                offset = (i - 1) * dist
-                rowMoves.append(offset + middle)
-        return rowMoves
+            return self._get_non_middle_row_moves(row, middle)
+
+    def _get_middle_row_moves(self, middle):
+        row_moves = []
+        for cell in range(self.board_size):
+            if cell != middle:
+                row_moves.append(cell)
+        return row_moves
+
+    def _get_non_middle_row_moves(self, row, middle):
+        row_moves = []
+        dist = abs(row - middle)
+        for cell in range(3):
+            offset = (cell - 1) * dist
+            row_moves.append(offset + middle)
+        return row_moves
+    
+
 
     def set_valid_cells_to_empty(self):
         for index, row in enumerate(self.board):

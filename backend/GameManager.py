@@ -2,6 +2,7 @@
 from backend.Board import Board
 from backend.Cell import Color
 from backend.Player import Player
+from backend.ComputerPlayer import ComputerPlayer
 
 
 class GameManager:
@@ -9,6 +10,8 @@ class GameManager:
         self.board = Board(size)
         self.player_1 = Player(pieces, Color.WHITE)
         self.player_2 = Player(pieces, Color.BLACK)
+        self.human_player = Player(pieces, Color.WHITE)
+        self.computer_player = ComputerPlayer(pieces, Color.BLACK)
         self.turn = Color.WHITE
         self.selected_piece = None
         self.open_moves = self.board.get_valid_moves()
@@ -49,8 +52,8 @@ class GameManager:
         return self.turn.name.lower()
 
     def placement_complete(self):
-        return self.player_1.all_of_players_pieces_placed() and \
-               self.player_2.all_of_players_pieces_placed()
+        return self.get_current_player().all_of_players_pieces_placed() and \
+               self.get_opponent().all_of_players_pieces_placed()
     
     def place_piece(self, row, column):
         if (row, column) in self.open_moves:
@@ -59,10 +62,8 @@ class GameManager:
                 return "GameManagerError -- position not empty"
 
             is_piece_placed = 0
-            if self.turn == Color.WHITE:
-                is_piece_placed = self.player_1.set_players_piece(row, column)
-            else:
-                is_piece_placed = self.player_2.set_players_piece(row, column)
+            current_player = self.get_current_player()
+            is_piece_placed = current_player.set_players_piece(row, column)
 
             if is_piece_placed == 1:
                 self.board.set_position(row, column, self.turn.name.lower())
@@ -157,8 +158,7 @@ class GameManager:
         else:
             return None
 
-        # Return opponent as Winner
-        return Color.BLACK if self.get_turn() == Color.WHITE else Color.WHITE
+        return self.get_opponent().get_color()
 
     '''
     the select_piece func should return the available empty adjacent positions to where the piece can be moved 
@@ -214,17 +214,6 @@ class GameManager:
     def get_piece_at(self, row, col):
         return self.board.board[row][col]
 
-        # def is_mill_formed(self, row, col, turn):
-
-    #     for mill in self.mills:
-    #         if (row, col) in mill:
-    #             # Check if all three positions in this mill belong to the current player
-    #             first = self.get_piece_at(r, c)
-
-    #             if all(self.get_piece_at(r, c) == turn for r, c in mill):
-    #                 return True
-    #     return False
-
     def is_mill_formed(self, row, col):
         for mill in self.mills:
             if (row, col) in mill:
@@ -274,7 +263,6 @@ class GameManager:
         self.waiting_for_removal = False  # Reset the removal state
         self.removable_pieces = []  # Clear the list of removable pieces
         self.end_turn()  # End the turn after removal
-        self.end_turn()  # swap the turn to opponent
         return True
 
     def remove_opponent_piece(self, pieces_on_board):
@@ -318,4 +306,12 @@ class GameManager:
                 print("Mill formed! Remove opponent's piece.")
                 self.remove_opponent_piece(pieces_on_board)
 
+            self.end_turn()
+
+    def handle_computer_turn(self):
+        if self.placement_complete():
+            self.computer_player.make_move(self)
+            self.end_turn()
+        else:
+            self.computer_player.place_piece(self)
             self.end_turn()
