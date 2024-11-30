@@ -1,8 +1,6 @@
 import pygame as pg
 import time
 
-
-from backend.Board import Board
 from backend.Cell import Color
 import sys
 vec2 = pg.math.Vector2 
@@ -11,8 +9,17 @@ vec2 = pg.math.Vector2
 class BoardGUI:
     def __init__(self, game, WIN_SIZE, board_size, game_manager):
         self.game = game
+
+        board_path = "resources/board/"
+        if game_manager.get_game_type() == 6:
+            board_path += "six_board.png"
+        elif game_manager.get_game_type() == 9:
+            board_path += "nine_board.png"
+        else:
+            board_path += "twelve_board.png"
+            
         self.board_image = self.get_scaled_image(
-            "resources/board/board.png", [WIN_SIZE] * 2
+            board_path, [WIN_SIZE] * 2
         )
         self.cell_size = WIN_SIZE // board_size
         self.black_piece_image = self.get_scaled_image(

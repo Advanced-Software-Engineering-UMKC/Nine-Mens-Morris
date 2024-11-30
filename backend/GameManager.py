@@ -7,7 +7,7 @@ from backend.ComputerPlayer import ComputerPlayer
 
 class GameManager:
     def __init__(self, size, pieces):
-        self.board = Board(size)
+        self.board = Board(size, pieces)
         self.player_1 = Player(pieces, Color.WHITE)
         self.player_2 = Player(pieces, Color.BLACK)
         self.human_player = Player(pieces, Color.WHITE)
@@ -18,26 +18,7 @@ class GameManager:
         self.use_computer_opponent = False
 
         # Mill variables
-        self.mills = [
-            [(0, 0), (0, 3), (0, 6)],  # Horizontal mills
-            [(1, 1), (1, 3), (1, 5)],
-            [(2, 2), (2, 3), (2, 4)],
-            [(3, 0), (3, 1), (3, 2)],
-            [(3, 4), (3, 5), (3, 6)],
-            [(4, 2), (4, 3), (4, 4)],
-            [(5, 1), (5, 3), (5, 5)],
-            [(6, 0), (6, 3), (6, 6)],
-
-            # Vertical mills
-            [(0, 0), (3, 0), (6, 0)],
-            [(1, 1), (3, 1), (5, 1)],
-            [(2, 2), (3, 2), (4, 2)],
-            [(0, 3), (1, 3), (2, 3)],
-            [(4, 3), (5, 3), (6, 3)],
-            [(2, 4), (3, 4), (4, 4)],
-            [(1, 5), (3, 5), (5, 5)],
-            [(0, 6), (3, 6), (6, 6)]
-        ]
+        self.mills = self.gen_mill_list()
         self.waiting_for_removal = False
         self.removable_pieces = []
 
@@ -55,6 +36,48 @@ class GameManager:
     def placement_complete(self):
         return self.get_current_player().all_of_players_pieces_placed() and \
                self.get_opponent().all_of_players_pieces_placed()
+    
+    def gen_mill_list(self):
+        mills = []
+        row_size = self.board.board_info["row_size"]
+
+        # intramills
+        for offset in range(row_size, 0, -1):
+            ini = row_size - offset
+            sec = ini + offset
+            thi = ini + offset*2
+
+            mills.append([(ini, ini), (ini, sec), (ini, thi)])
+            mills.append([(thi, ini), (thi, sec), (thi, thi)])
+
+            mills.append([(ini, ini), (sec, ini), (thi, ini)])
+            mills.append([(ini, thi), (sec, thi), (thi, thi)])
+        
+        # intermills, if applicable
+        if row_size > 2:
+            ini = 0
+            mid = row_size
+            fin = self.board.board_info["size"]
+
+            mills.append([(mid, ini), (mid, ini+1), (mid, ini+2)])
+            mills.append([(mid, fin-mid), (mid, fin-mid+1), (mid, fin-mid+2)])
+
+            mills.append([(ini, mid), (ini+1, mid), (ini+2, mid)])
+            mills.append([(fin-mid, mid), (fin-mid+1, mid), (fin-mid+2, mid)])
+
+        
+        # diagonals, if applicable
+        if self.board.board_info["diagonals"]:
+            ini = 0
+            fin = row_size*2
+
+            mills.append([(ini, ini), (ini+1, ini+1), (ini+2, ini+2)])
+            mills.append([(fin, fin), (fin-1, fin-1), (fin-2, fin-2)])
+
+            mills.append([(ini, fin), (ini+1, fin-1), (ini+2, fin-2)])
+            mills.append([(fin, ini), (fin-1, ini+1), (fin-2, ini+2)])
+
+        return mills
     
     def place_piece(self, row, column):
         if (row, column) in self.open_moves:
