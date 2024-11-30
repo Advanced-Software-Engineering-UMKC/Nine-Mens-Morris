@@ -70,9 +70,15 @@ class ComputerPlayer(Player):
     
     def check_if_any_other_piece_is_in_mill(self, inner_array, current_board):
         no_white_pieces_and_black_piece_exists = False
+        black_piece_found = False
         for piece in inner_array:
-            if current_board.check_position(piece[0], piece[1]) == Color.WHITE:
+            piece_color = current_board.check_position(piece[0], piece[1])
+            if piece_color == Color.WHITE:
                 return False
+            elif piece_color == Color.BLACK:
+                if black_piece_found:
+                    return True
+                black_piece_found = True
             no_white_pieces_and_black_piece_exists = True
         return no_white_pieces_and_black_piece_exists
                 
