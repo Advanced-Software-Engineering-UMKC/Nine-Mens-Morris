@@ -13,21 +13,56 @@ class GameGUI:
         self.screen = pg.display.set_mode((WIN_SIZE, WIN_SIZE + self.info_height))
         self.clock = pg.time.Clock()
         # window title
-        pg.display.set_caption("Nine-Mens-Morris")
-        self.board_size = 7
-        self.total_pieces = 9
-        self.game_manager = GameManager(self.board_size, self.total_pieces)
-        self.board_gui = BoardGUI(
-            self, WIN_SIZE, self.board_size, self.game_manager
-        )
 
+    def finish_init(self, size, pieces):
+        cap = "-Mens-Morris"
+        if pieces == 6:
+            cap = "Six" + cap
+        elif pieces == 9:
+            cap = "Nine" + cap
+        else:
+            cap = "Twelve" + cap
+        pg.display.set_caption(cap)
+        self.board_size = size
+        self.total_pieces = pieces
+        self.game_manager = GameManager(self.board_size, self.total_pieces)
+        self.board_gui = BoardGUI(self, WIN_SIZE, self.board_size, self.game_manager)
+
+    def game_picker_screen(self):
+        title_text = self.font.render("Pick a Men's Morris game", True, (255, 255, 255))
+        six_text = self.font.render("Press 1 for Six", True, (255, 255, 255))
+        nine_text = self.font.render("Press 2 for Nine", True, (255, 255, 255))
+        twelve_text = self.font.render("Press 3 for Twelve", True, (255, 255, 255))
+
+        while True:
+            self.screen.fill((0, 0, 0))
+            self.screen.blit(title_text, (50, 50))
+            self.screen.blit(six_text, (50, 250))
+            self.screen.blit(nine_text, (50, 350))
+            self.screen.blit(twelve_text, (50, 450))
+            pg.display.update()
+
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
+                elif event.type == pg.KEYDOWN:
+                    if event.key == pg.K_1:
+                        self.finish_init(5, 6)
+                        return
+                    elif event.key == pg.K_2:
+                        self.finish_init(7, 9)
+                        return
+                    elif event.key == pg.K_3:
+                        self.finish_init(7, 12)
+                        return
 
     def start_screen(self):
-        font = pg.font.Font(None, 34)
-        title_font = pg.font.Font(None, 48)
-        title_text = title_font.render("Nine Mens Morris", True, (255, 255, 255))
-        human_text = font.render("Press 1 for Human", True, (255, 255, 255))
-        computer_text = font.render("Press 2 for Computer", True, (255, 255, 255))
+        self.font = pg.font.Font(None, 34)
+        self.title_font = pg.font.Font(None, 48)
+        title_text = self.title_font.render("Nine Mens Morris", True, (255, 255, 255))
+        human_text = self.font.render("Press 1 for Human", True, (255, 255, 255))
+        computer_text = self.font.render("Press 2 for Computer", True, (255, 255, 255))
 
         while True:
             self.screen.fill((0, 0, 0))
@@ -63,6 +98,7 @@ class GameGUI:
 
     def run_game(self):
         self.start_screen()
+        self.game_picker_screen()
         self.board_gui.build_board()
 
         while True:

@@ -5,6 +5,7 @@ from backend.Cell import Cell, Color
 class Board:
     def __init__(self, size, piece_count):
         self.board_info = {
+            "type": piece_count,
             "size": size,
             "diagonals": True if piece_count == 12 else False,
             "row_size": 2 if piece_count == 6 else 3
@@ -103,11 +104,15 @@ class Board:
                 row_moves.append(cell)
         return row_moves
 
-    # 3 needs to be changed to support any board size
+    '''hmm, so the "magic number" 3 here represents the number valid spots in a row. 
+    that actually doesn't change depending on the board, except in the middle on 6, 
+    but the middle works fine and is in a separate function
+    
+    we can change this if you guys are concerned about it, but it's the same no matter the men's morris game. even 3 works this way'''
     def _get_non_middle_row_moves(self, row, middle):
         row_moves = []
         dist = abs(row - middle)
-        for cell in range(self.board_info["row_size"]):
+        for cell in range(3):
             offset = (cell - 1) * dist
             row_moves.append(offset + middle)
         return row_moves

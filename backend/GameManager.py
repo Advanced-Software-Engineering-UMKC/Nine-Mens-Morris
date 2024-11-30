@@ -32,6 +32,9 @@ class GameManager:
 
     def get_turn_as_string(self):
         return self.turn.name.lower()
+    
+    def get_game_type(self):
+        return self.board.board_info["type"]
 
     def placement_complete(self):
         return self.get_current_player().all_of_players_pieces_placed() and \
