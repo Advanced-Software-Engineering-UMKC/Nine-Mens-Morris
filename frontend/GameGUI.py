@@ -30,7 +30,8 @@ class GameGUI:
             # Check for mouse click events
             elif event.type == pg.MOUSEBUTTONDOWN:
                 # Only run get_cell_clicked when a mouse button is clicked
-                self.board.get_cell_clicked()
+                # self.board.get_cell_clicked()
+                self.board.replay_game()
 
     def run_game(self):
         self.board.build_board()

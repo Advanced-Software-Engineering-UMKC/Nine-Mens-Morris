@@ -2,7 +2,8 @@
 from backend.Board import Board
 from backend.Piece import Pieces
 from backend.Cell import Color
-
+import json
+import os
 
 class GameManager:
     def __init__(self, size, pieces):
@@ -11,6 +12,7 @@ class GameManager:
         self.turn = Color.WHITE
         self.selected_piece = None
         self.open_moves = self.board.get_valid_moves()
+        self.move_history = []
 
         # Mill variables
         self.mills = [
@@ -56,6 +58,13 @@ class GameManager:
                 print(self.board.check_position(row, column))
                 return "GameManagerError -- position not empty"
 
+            self.move_history.append({
+                'action': 'place',
+                'player': self.turn.name,
+                'position': (row, column)
+            })
+
+            
             is_piece_placed = 0
             if self.turn == Color.WHITE:
                 is_piece_placed = self.pieces.set_white_piece(row, column)
@@ -130,15 +139,18 @@ class GameManager:
     # Returns winner if game is over, or None
     def check_game_over(self):
         my_pieces = []
+        history_path = '/Users/suryanshpatel/Projects/9mens morris Software enginnering/Nine-Mens-Morris/resources/history/game_history.json'
 
         # Check if opponent has 2 pieces left, if so then current player wins
         if self.pieces.all_pieces_placed():
             if self.turn == Color.WHITE:
                 if self.pieces.count_black_remains == 2:
+                    self.save_history_to_json(history_path)
                     return self.turn
                 my_pieces = self.pieces.white_pieces
             elif self.turn == Color.BLACK:
                 if self.pieces.count_white_remains == 2:
+                    self.save_history_to_json(history_path)
                     return self.turn
                 my_pieces = self.pieces.black_pieces
 
@@ -152,6 +164,9 @@ class GameManager:
             return None
 
         # Return opponent as Winner
+        
+        self.save_history_to_json(history_path)
+        
         return Color.BLACK if self.get_turn() == Color.WHITE else Color.WHITE
 
     '''
@@ -185,6 +200,13 @@ class GameManager:
             if not self.is_adjacent_and_empty(start_row, start_col, target_row, target_col):
                 raise Exception("MoveError -- Invalid move, pieces can only move to adjacent positions")
 
+        self.move_history.append({
+            'action': 'move',
+            'player': self.turn.name,
+            'from_position': (start_row, start_col),
+            'to_position': (target_row, target_col)
+        })
+        
         # Perform the move
         self.board.set_position(target_row, target_col, self.turn.name.lower())
         self.board.set_position(start_row, start_col, Color.EMPTY)
@@ -259,6 +281,12 @@ class GameManager:
         else:
             self.pieces.decrease_white_piece_count()
 
+        self.move_history.append({
+            'action' : 'remove',
+            'player' : self.turn.name,
+            'position' : (row, col)}
+        )
+        
         self.waiting_for_removal = False  # Reset the removal state
         self.removable_pieces = []  # Clear the list of removable pieces
         self.end_turn()  # End the turn after removal
@@ -307,3 +335,11 @@ class GameManager:
                 self.remove_opponent_piece(pieces_on_board)
 
             self.end_turn()
+
+    def save_history_to_json(self, file_path):
+        # Ensure the directory exists
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+        with open(file_path, 'w') as file:
+            json.dump(self.move_history, file, indent=4)
+        print(f"Game history saved to {file_path}")
