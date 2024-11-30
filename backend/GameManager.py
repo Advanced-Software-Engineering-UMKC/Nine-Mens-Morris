@@ -102,17 +102,6 @@ class GameManager:
             if (target_row, target_col) in self.open_moves:
                 return True
         return False
-
-    def find_empty_adjacents(self, row, col):
-        empty_adjacent_positions = []
-        all_adjacent_positions = self.board.adjacent_positions_map[(row, col)]
-
-        for row, col in all_adjacent_positions:
-            position_state = self.board.check_position(row, col)
-            if position_state == Color.EMPTY:
-                empty_adjacent_positions.append((row, col))
-
-        return empty_adjacent_positions
     
     def can_fly(self, player):
         if len(player.pieces) == 3:
@@ -130,15 +119,6 @@ class GameManager:
         else:
             return self.player_1
 
-    def get_movable_options(self, row, col):
-        # calculate the available adjacent positions
-        if self.can_fly(self.get_current_player()):
-            # if can fly, return all open positions
-            return self.open_moves
-        else:
-            # if more than 3 pieces left, user can only move to empty adjacent positions
-            return self.find_empty_adjacents(row, col)
-
     # Returns winner if game is over, or None
     def check_game_over(self):
         current_player_pieces = []
@@ -152,7 +132,7 @@ class GameManager:
 
             # Check if the current player don't have any valid movable options
             for piece in current_player_pieces:
-                movable_options = self.get_movable_options(piece.position[0], piece.position[1])
+                movable_options = self.board.get_movable_options(piece.position[0], piece.position[1], self.can_fly(current_player))
                 if movable_options is not None and len(movable_options) > 0:
                     # At-least found one movable option
                     return None
@@ -173,7 +153,7 @@ class GameManager:
         self.selected_piece = (row, col)
 
         if self.turn == cell.get_state():
-            return self.get_movable_options(row, col)
+            return self.board.get_movable_options(row, col, self.can_fly(self.get_current_player()))
 
         self.selected_piece = None
         raise Exception("SelectionError -- Invalid piece selection")
@@ -341,9 +321,9 @@ class GameManager:
         if self.placement_complete():
             open_moves = []
             while len(open_moves) == 0:
-                self.selected_piece = self.player_2.decide_piece_to_move(self.mills)
-                open_moves = self.get_movable_options(self.selected_piece.position[0], self.selected_piece.position[1])
-            target_cell = self.player_2.decide_move_target(self.mills, open_moves)
+                self.selected_piece = self.player_2.decide_piece_to_move(self.mills, self.board)
+                open_moves = self.board.get_movable_options(self.selected_piece[0], self.selected_piece[1], self.can_fly(self.get_current_player()))
+            target_cell = self.player_2.decide_move_target(self.mills, open_moves, self.board)
             self.selected_piece = self.selected_piece.position
             print(f"Computer moving piece from {self.selected_piece} to {target_cell}")
             self.move_piece(target_cell[0], target_cell[1])
@@ -353,16 +333,6 @@ class GameManager:
                         self.remove_opponent_piece()
             self.end_turn()
             return
-            # for piece in self.player_2.pieces:
-            #     open_moves = self.get_movable_options(piece.position[0], piece.position[1])
-            #     if len(open_moves) > 0:
-            #         target_cell = self.player_2.decide_move_target(open_moves)
-            #         self.selected_piece = piece.position
-            #         self.move_piece(target_cell[0], target_cell[1])
-            #         if self.is_mill_formed(target_cell[0], target_cell[1]):
-            #             print("Mill formed! Remove opponent's piece.")
-            #             self.remove_opponent_piece()
-            #         return
         else:
-            selected_piece = self.player_2.decide_piece_placement(self.open_moves, self.mills)
+            selected_piece = self.player_2.decide_piece_placement(self.open_moves, self.mills, self.board)
             self.handle_piece_placement(selected_piece[0], selected_piece[1])

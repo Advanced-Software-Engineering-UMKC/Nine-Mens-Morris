@@ -124,3 +124,24 @@ class Board:
         # Remove the piece from the internal structure
         if (row, col) in self.pieces_on_board:
             del self.pieces_on_board[(row, col)]
+
+    
+    def find_empty_adjacents(self, row, col):
+        empty_adjacent_positions = []
+        all_adjacent_positions = self.adjacent_positions_map[(row, col)]
+
+        for row, col in all_adjacent_positions:
+            position_state = self.check_position(row, col)
+            if position_state == Color.EMPTY:
+                empty_adjacent_positions.append((row, col))
+
+        return empty_adjacent_positions
+    
+    def get_movable_options(self, row, col, can_fly):
+        # calculate the available adjacent positions
+        if can_fly:
+            # if can fly, return all open positions
+            return self.valid_moves
+        else:
+            # if more than 3 pieces left, user can only move to empty adjacent positions
+            return self.find_empty_adjacents(row, col)

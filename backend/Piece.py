@@ -8,7 +8,7 @@ class Piece:
         self.color = color
         self.position = (-1, -1)
 
-    def get_turn(self):
+    def get_color(self):
         return self.color
 
     def get_position(self):
