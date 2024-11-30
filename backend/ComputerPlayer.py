@@ -92,3 +92,22 @@ class ComputerPlayer(Player):
     def decide_piece_to_remove(self, opponent_pieces, board, mills):
         random_piece = random.choice(opponent_pieces)
         return random_piece
+    
+
+    def are_other_computer_pieces_in_mill(self, inner_array, current_board):
+        other_black_pieces_in_mill = False
+        for piece in inner_array:
+            piece_color = current_board.check_position(piece[0], piece[1])
+            if piece_color == Color.BLACK:
+                other_black_pieces_in_mill = True
+        return other_black_pieces_in_mill
+    
+    def other_pieces_in_mill(self, inner_array, current_board):
+        open_positions = []
+        black_pieces_in_mill = []
+        for piece in inner_array:
+            if current_board.check_position(piece[0], piece[1]) == Color.EMPTY:
+                open_positions.append(piece)
+            elif current_board.check_position(piece[0], piece[1]) == Color.BLACK:
+                black_pieces_in_mill.append(piece)
+        return open_positions, black_pieces_in_mill
