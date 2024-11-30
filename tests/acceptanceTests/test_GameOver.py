@@ -32,10 +32,10 @@ class TestGameOver:
         assert game_manager.get_turn() == Color.WHITE
 
         # When none of the white pieces can move
-        assert len(game_manager.get_movable_options(0,0)) == 0
-        assert len(game_manager.get_movable_options(3,0)) == 0
-        assert len(game_manager.get_movable_options(0,3)) == 0
-        assert len(game_manager.get_movable_options(1,1)) == 0
+        assert len(game_manager.get_board().get_movable_options(0,0, False)) == 0
+        assert len(game_manager.get_board().get_movable_options(3,0, False)) == 0
+        assert len(game_manager.get_board().get_movable_options(0,3, False)) == 0
+        assert len(game_manager.get_board().get_movable_options(1,1, False)) == 0
 
         # Then the game is over
         result = game_manager.check_game_over()
@@ -62,10 +62,10 @@ class TestGameOver:
         assert game_manager.get_turn() == Color.BLACK
 
         # When none of the black pieces can move
-        assert len(game_manager.get_movable_options(0,0)) == 0
-        assert len(game_manager.get_movable_options(3,0)) == 0
-        assert len(game_manager.get_movable_options(0,3)) == 0
-        assert len(game_manager.get_movable_options(1,1)) == 0
+        assert len(game_manager.get_board().get_movable_options(0,0, False)) == 0
+        assert len(game_manager.get_board().get_movable_options(3,0, False)) == 0
+        assert len(game_manager.get_board().get_movable_options(0,3, False)) == 0
+        assert len(game_manager.get_board().get_movable_options(1,1, False)) == 0
 
         # Then the game is over
         result = game_manager.check_game_over()
@@ -96,12 +96,12 @@ class TestGameOver:
         assert game_manager.is_mill_formed(3,4) == True
 
         # And a white piece is removed from the board
-        assert game_manager.remove_opponent_piece({(6,0):Color.WHITE,(6,3):Color.WHITE,(3,1):Color.WHITE,(3,6):Color.BLACK,(0,6):Color.BLACK,(3,5):Color.BLACK,(3,4):Color.BLACK}) == True
+        assert game_manager.remove_opponent_piece() == True
         game_manager.remove_piece_mill(6,3)
         assert game_manager.get_piece_at(6,3).get_state() == Color.EMPTY
 
         # And there are less than 3 white pieces remaining 
-        assert game_manager.pieces.count_white_remains < 3
+        assert len(game_manager.player_1.pieces) < 3
 
         # Then the game is over
         result = game_manager.check_game_over()
@@ -133,12 +133,12 @@ class TestGameOver:
         assert game_manager.is_mill_formed(3,0) == True
 
         # And a black piece is removed from the board
-        assert game_manager.remove_opponent_piece({(0,0):Color.WHITE,(6,0):Color.WHITE,(6,3):Color.WHITE,(3,0):Color.WHITE,(0,6):Color.BLACK,(3,5):Color.BLACK,(3,4):Color.BLACK}) == True
+        assert game_manager.remove_opponent_piece() == True
         game_manager.remove_piece_mill(2,4)
         assert game_manager.get_piece_at(2,4).get_state() == Color.EMPTY
 
         # And there are less than 3 black pieces remaining 
-        assert game_manager.pieces.count_black_remains < 3
+        assert len(game_manager.player_2.pieces) < 3
 
         # Then the game is over
         result = game_manager.check_game_over()
@@ -154,7 +154,7 @@ class TestGameOver:
         game_manager.place_piece(0,0)
 
         # And less than 3 white pieces have been placed
-        assert game_manager.pieces.count_white_placed < 3
+        assert len(game_manager.player_1.pieces) < 5
 
         # Then the game is not over
         assert game_manager.check_game_over() == None
@@ -168,7 +168,7 @@ class TestGameOver:
         game_manager.place_piece(0,0)
 
         # And less than 3 black pieces have been placed
-        assert game_manager.pieces.count_black_placed < 3
+        assert len(game_manager.player_2.pieces) < 5
 
         # Then the game is not over
         assert game_manager.check_game_over() == None
@@ -191,12 +191,12 @@ class TestGameOver:
         assert game_manager.is_mill_formed(0,6) == True
 
         # And a white piece is removed from the board
-        assert game_manager.remove_opponent_piece({(0,0):Color.WHITE,(3,0):Color.WHITE,(0,3):Color.WHITE,(0,6):Color.BLACK,(3,6):Color.BLACK,(6,6):Color.BLACK}) == True
+        assert game_manager.remove_opponent_piece() == True
         game_manager.remove_piece_mill(0,3)
         assert game_manager.get_piece_at(0,3).get_state() == Color.EMPTY
 
         # And less than 3 white pieces remain on the board
-        assert game_manager.pieces.count_white_remains < 3
+        assert len(game_manager.player_1.pieces) < 4
 
         # Then the game is not over
         assert game_manager.check_game_over() == None
@@ -226,12 +226,12 @@ class TestGameOver:
         assert game_manager.is_mill_formed(6,0) == True
 
         # And a black piece is removed from the board
-        assert game_manager.remove_opponent_piece({(0,0):Color.WHITE,(3,0):Color.WHITE,(0,3):Color.WHITE,(6,0):Color.WHITE,(3,5):Color.BLACK,(3,6):Color.BLACK,(6,6):Color.BLACK}) == True
+        assert game_manager.remove_opponent_piece() == True
         game_manager.remove_piece_mill(6,6)
         assert game_manager.get_piece_at(6,6).get_state() == Color.EMPTY
 
         # And less than 3 black pieces remain on the board
-        assert game_manager.pieces.count_black_remains < 3
+        assert len(game_manager.player_2.pieces) < 4
 
         # Then the game is not over
         assert game_manager.check_game_over() == None

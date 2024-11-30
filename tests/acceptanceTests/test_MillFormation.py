@@ -45,7 +45,7 @@ class TestMillFormation:
         game_manager.end_turn()
 
         # Then one of the non-mill black pieces can be removed
-        assert game_manager.remove_opponent_piece({(0,0): Color.WHITE,(6,0):Color.WHITE,(6,3):Color.WHITE,(3,0):Color.WHITE,(3,6):Color.BLACK,(0,6):Color.BLACK,(3,5):Color.BLACK}) == True
+        assert game_manager.remove_opponent_piece() == True
         game_manager.remove_piece_mill(3,5)
         assert game_manager.get_piece_at(3,5).get_state() == Color.EMPTY
         assert game_manager.get_turn() == Color.WHITE
@@ -71,7 +71,7 @@ class TestMillFormation:
         game_manager.end_turn()
 
         # Then one of the non-mill black pieces can be removed
-        assert game_manager.remove_opponent_piece({(0,0): Color.WHITE,(6,0):Color.WHITE,(6,3):Color.WHITE,(6,6):Color.BLACK,(0,6):Color.BLACK,(3,5):Color.BLACK,(3,6):Color.BLACK}) == True
+        assert game_manager.remove_opponent_piece() == True
         game_manager.remove_piece_mill(0,0)
         assert game_manager.get_piece_at(0,0).get_state() == Color.EMPTY
         assert game_manager.get_turn() == Color.BLACK
@@ -96,7 +96,7 @@ class TestMillFormation:
         game_manager.end_turn()
 
         # Then one of the non-mill black pieces can be removed
-        assert game_manager.remove_opponent_piece({(0,0): Color.WHITE,(6,0):Color.WHITE,(6,3):Color.WHITE,(6,6):Color.WHITE,(3,6):Color.BLACK,(0,6):Color.BLACK,(3,5):Color.BLACK}) == True
+        assert game_manager.remove_opponent_piece() == True
         game_manager.remove_piece_mill(3,5)
         assert game_manager.get_piece_at(3,5).get_state() == Color.EMPTY
         assert game_manager.get_turn() == Color.WHITE
@@ -122,7 +122,7 @@ class TestMillFormation:
         game_manager.end_turn()
 
         # Then one of the non-mill black pieces can be removed
-        assert game_manager.remove_opponent_piece({(0,0): Color.WHITE,(6,0):Color.WHITE,(6,3):Color.WHITE,(3,4):Color.BLACK,(0,6):Color.BLACK,(3,5):Color.BLACK,(3,6):Color.BLACK}) == True
+        assert game_manager.remove_opponent_piece() == True
         game_manager.remove_piece_mill(0,0)
         assert game_manager.get_piece_at(0,0).get_state() == Color.EMPTY
         assert game_manager.get_turn() == Color.BLACK
@@ -151,7 +151,7 @@ class TestMillFormation:
         game_manager.end_turn()
 
         # Then one of the mill black pieces can be removed
-        assert game_manager.remove_opponent_piece({(0,0): Color.WHITE,(6,0):Color.WHITE,(6,3):Color.WHITE,(3,0):Color.WHITE,(3,6):Color.BLACK,(0,6):Color.BLACK,(6,6):Color.BLACK}) == True
+        assert game_manager.remove_opponent_piece() == True
         game_manager.remove_piece_mill(6,6)
         assert game_manager.get_piece_at(6,6).get_state() == Color.EMPTY
         assert game_manager.get_turn() == Color.WHITE
@@ -180,7 +180,7 @@ class TestMillFormation:
         game_manager.end_turn()
 
         # Then one of the mill black pieces can be removed
-        assert game_manager.remove_opponent_piece({(0,0): Color.WHITE,(6,0):Color.WHITE,(3,0):Color.WHITE,(3,6):Color.BLACK,(0,6):Color.BLACK,(6,6):Color.BLACK}) == True
+        assert game_manager.remove_opponent_piece() == True
         game_manager.remove_piece_mill(0,0)
         assert game_manager.get_piece_at(0,0).get_state() == Color.EMPTY
         assert game_manager.get_turn() == Color.BLACK
@@ -202,7 +202,7 @@ class TestMillFormation:
         assert game_manager.is_mill_formed(3,0) == True
 
         # Then one of the black pieces can be removed
-        assert game_manager.remove_opponent_piece({(0,0): Color.WHITE,(6,0):Color.WHITE,(6,3):Color.WHITE,(3,0):Color.WHITE,(3,6):Color.BLACK,(0,6):Color.BLACK,(3,5):Color.BLACK}) == True
+        assert game_manager.remove_opponent_piece() == True
         game_manager.remove_piece_mill(3,5)
         assert game_manager.get_piece_at(3,5).get_state() == Color.EMPTY
         assert game_manager.get_turn() == Color.WHITE
@@ -231,7 +231,7 @@ class TestMillFormation:
         assert game_manager.is_mill_formed(6,6)
 
         # Then one of the black pieces can be removed
-        assert game_manager.remove_opponent_piece({(0,0): Color.WHITE,(6,0):Color.WHITE,(6,3):Color.WHITE,(3,0):Color.WHITE,(3,6):Color.BLACK,(0,6):Color.BLACK,(3,5):Color.BLACK}) == True
+        assert game_manager.remove_opponent_piece() == True
         game_manager.remove_piece_mill(3,5)
         assert game_manager.get_piece_at(3,5).get_state() == Color.EMPTY
         assert game_manager.get_turn() == Color.WHITE

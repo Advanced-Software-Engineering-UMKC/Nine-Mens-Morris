@@ -32,7 +32,7 @@ class TestPieceMovement:
         assert game_manager.get_turn() == Color.WHITE
 
         # And that there are 4+ white pieces remaining
-        assert game_manager.pieces.count_white_remains > 3
+        assert len(game_manager.player_1.pieces) > 3
 
         # When the white piece player moves a white piece to an empty and adjacent cell
         game_manager.select_piece(0,0)
@@ -54,7 +54,7 @@ class TestPieceMovement:
         assert game_manager.get_turn() == Color.BLACK
 
         # And that there are 4+ black pieces remaining
-        assert game_manager.pieces.count_black_remains > 3
+        assert len(game_manager.player_2.pieces) > 3
 
         # When the black piece player moves a black piece to an empty and adjacent cell
         game_manager.select_piece(6,6)
@@ -76,7 +76,7 @@ class TestPieceMovement:
         assert game_manager.get_turn() == Color.WHITE
 
         # And that there are 4+ white pieces remaining
-        assert game_manager.pieces.count_white_remains > 3
+        assert len(game_manager.player_1.pieces) > 3
 
         # When the white piece player moves a white piece to an adjacent cell that is not empty
         game_manager.select_piece(0,0)
@@ -100,7 +100,7 @@ class TestPieceMovement:
         assert game_manager.get_turn() == Color.BLACK
 
         # And that there are 4+ black pieces remaining
-        assert game_manager.pieces.count_black_remains > 3
+        assert len(game_manager.player_2.pieces) > 3
 
         # When the black piece player moves a black piece to an empty and adjacent cell
         game_manager.select_piece(6,6)
@@ -123,7 +123,7 @@ class TestPieceMovement:
         assert game_manager.get_turn() == Color.WHITE
 
         # And the current player has more than 3 pieces remaining
-        assert game_manager.pieces.count_white_remains > 3
+        assert len(game_manager.player_1.pieces) > 3
 
         # When the player moves one of their pieces to a non-adjacent cell
         game_manager.select_piece(0,0)
@@ -174,7 +174,7 @@ class TestPieceMovement:
     def test_white_piece_flight_remove(self, setup_board):
         # Given an ongoing game on white's turn
         game_manager = setup_board
-        assert game_manager.pieces.count_white_remains == 4
+        assert len(game_manager.player_1.pieces) == 4
         assert game_manager.get_piece_at(6,0).get_state() == Color.WHITE
         game_manager.end_turn()
         game_manager.remove_piece_mill(6,0)
@@ -185,7 +185,7 @@ class TestPieceMovement:
         assert game_manager.get_turn() == Color.WHITE
 
         # And white has exactly 3 pieces remaining
-        assert game_manager.pieces.count_white_remains == 3
+        assert len(game_manager.player_1.pieces) == 3
 
         # When a white piece is moved to an empty cell
         game_manager.select_piece(0,0)
@@ -212,7 +212,7 @@ class TestPieceMovement:
         assert game_manager.get_turn() == Color.BLACK
 
         # And black has exactly 3 pieces remaining
-        assert game_manager.pieces.count_black_remains == 3
+        assert len(game_manager.player_2.pieces) == 3
 
         # When a black piece is moved to an empty cell
         game_manager.select_piece(6,6)
