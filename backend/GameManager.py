@@ -319,10 +319,10 @@ class GameManager:
 
     def handle_computer_turn(self):
         if self.placement_complete():
-            open_moves = []
-            while len(open_moves) == 0:
-                self.selected_piece = self.player_2.decide_piece_to_move(self.mills, self.board)
-                open_moves = self.board.get_movable_options(self.selected_piece[0], self.selected_piece[1], self.can_fly(self.get_current_player()))
+            self.selected_piece, open_moves = self.player_2.decide_piece_to_move(self.mills, self.board, self.can_fly(self.get_current_player()))
+            # while len(open_moves) == 0:
+            #     self.selected_piece = self.player_2.decide_piece_to_move(self.mills, self.board)
+            #     open_moves = self.board.get_movable_options(self.selected_piece[0], self.selected_piece[1], self.can_fly(self.get_current_player()))
             target_cell = self.player_2.decide_move_target(self.mills, open_moves, self.board)
             self.selected_piece = self.selected_piece.position
             print(f"Computer moving piece from {self.selected_piece} to {target_cell}")

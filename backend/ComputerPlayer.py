@@ -15,25 +15,21 @@ class ComputerPlayer(Player):
             # chosen_position = (chosen_position[1], chosen_position[0])  # For some reason the check in GameManager.place_piece() is reversed
         return chosen_position
 
-    def decide_piece_to_move(self, possible_mills, current_board):
+    def decide_piece_to_move(self, possible_mills, current_board, can_fly):
         # if piece is not in possible_mills then move it else random
         # we need to find the mills that have computer pieces in them, dont use pieces in these mills if we can
-        pieces_in_mills = []
         chosen_position = None
         for piece in self.pieces:
             chosen_position = self.attempt_to_find_mill(possible_mills, [piece.position], current_board)
             if chosen_position is not None:
-                return chosen_position
-            # mill_index, found_mill_with_piece = self.find_piece_in_mill(possible_mills, piece.position)
-
-            # pieces_in_mills.append(piece)
-            # computers_pieces_minus_the_one_found = [piece_2.position for piece_2 in self.pieces if piece_2 not in pieces_in_mills]
-            # if self.share_no_values(computers_pieces_minus_the_one_found, found_mill_with_piece):
-            #     return piece
-            # pieces_in_mills.remove(piece)
-        if chosen_position is None:
-            chosen_position = random.choice(self.pieces)
-        return chosen_position
+                open_moves = current_board.get_movable_options(chosen_position[0], chosen_position[1], can_fly)
+                if len(open_moves) > 0:
+                    chosen_position = piece
+                    return chosen_position, open_moves
+            else:
+                chosen_position = piece
+                open_moves = current_board.get_movable_options(piece.position[0], piece.position[1], can_fly)      
+        return chosen_position, open_moves
     
     def share_no_values(self, array1, array2):
         set1 = set(array1)
