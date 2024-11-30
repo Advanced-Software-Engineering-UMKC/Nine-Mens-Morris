@@ -5,6 +5,8 @@ from backend.Cell import Color
 import json
 import os
 
+history_path = '/Users/suryanshpatel/Projects/9mens morris Software enginnering/Nine-Mens-Morris/resources/history/game_history.json' # change file name every time if want to record new game
+
 class GameManager:
     def __init__(self, size, pieces):
         self.board = Board(size)
@@ -139,7 +141,6 @@ class GameManager:
     # Returns winner if game is over, or None
     def check_game_over(self):
         my_pieces = []
-        history_path = '/Users/suryanshpatel/Projects/9mens morris Software enginnering/Nine-Mens-Morris/resources/history/game_history.json'
 
         # Check if opponent has 2 pieces left, if so then current player wins
         if self.pieces.all_pieces_placed():

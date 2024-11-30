@@ -4,8 +4,9 @@ import json
 from backend.Board import Board
 from backend.Cell import Color
 import sys
-vec2 = pg.math.Vector2 
 
+vec2 = pg.math.Vector2 
+history_path = '/Users/suryanshpatel/Projects/9mens morris Software enginnering/Nine-Mens-Morris/resources/history/game_history.json'
 
 class BoardGUI:
     def __init__(self, game, WIN_SIZE, board_size, total_pieces, gameManager):
@@ -156,8 +157,8 @@ class BoardGUI:
     
     def replay_game(self, delay=1.0):
         """Replay the game using the history loaded from the JSON file."""
-        
-        self.load_history('/Users/suryanshpatel/Projects/9mens morris Software enginnering/Nine-Mens-Morris/resources/history/game_history.json')
+     
+        self.load_history(history_path)
         
         for move in self.history:
             action = move["action"]
