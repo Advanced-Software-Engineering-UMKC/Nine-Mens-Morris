@@ -339,13 +339,29 @@ class GameManager:
 
     def handle_computer_turn(self):
         if self.placement_complete():
-            for piece in self.player_2.pieces:
-                open_moves = self.get_movable_options(piece.position[0], piece.position[1])
-                if len(open_moves) > 0:
-                    target_cell = self.player_2.decide_move_target(open_moves)
-                    self.selected_piece = piece.position
-                    self.move_piece(target_cell[0], target_cell[1])
-                    return
+            open_moves = []
+            while len(open_moves) == 0:
+                self.selected_piece = self.player_2.decide_piece_to_move(self.mills)
+                open_moves = self.get_movable_options(self.selected_piece.position[0], self.selected_piece.position[1])
+            target_cell = self.player_2.decide_move_target(self.mills, open_moves)
+            self.selected_piece = self.selected_piece.position
+            self.move_piece(target_cell[0], target_cell[1])
+            self.selected_piece = None
+            if self.is_mill_formed(target_cell[0], target_cell[1]):
+                        print("Mill formed! Remove opponent's piece.")
+                        self.remove_opponent_piece()
+            self.end_turn()
+            return
+            # for piece in self.player_2.pieces:
+            #     open_moves = self.get_movable_options(piece.position[0], piece.position[1])
+            #     if len(open_moves) > 0:
+            #         target_cell = self.player_2.decide_move_target(open_moves)
+            #         self.selected_piece = piece.position
+            #         self.move_piece(target_cell[0], target_cell[1])
+            #         if self.is_mill_formed(target_cell[0], target_cell[1]):
+            #             print("Mill formed! Remove opponent's piece.")
+            #             self.remove_opponent_piece()
+            #         return
         else:
             selected_piece = self.player_2.decide_piece_placement(self.open_moves, self.mills)
             self.handle_piece_placement(selected_piece[0], selected_piece[1])

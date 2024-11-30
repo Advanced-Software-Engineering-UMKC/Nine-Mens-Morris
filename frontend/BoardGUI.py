@@ -156,6 +156,4 @@ class BoardGUI:
             if self.game_manager.check_game_over():
                     print('Game Over winner is',self.game_manager.check_game_over())
                     sys.exit()
-            self.game_manager.end_turn()
-
 
