@@ -109,7 +109,7 @@ class GameManager:
 
         for row, col in all_adjacent_positions:
             position_state = self.board.check_position(row, col)
-            if position_state == Color.EMPTY or position_state == Color.VOID:
+            if position_state == Color.EMPTY:
                 empty_adjacent_positions.append((row, col))
 
         return empty_adjacent_positions
@@ -345,6 +345,7 @@ class GameManager:
                 open_moves = self.get_movable_options(self.selected_piece.position[0], self.selected_piece.position[1])
             target_cell = self.player_2.decide_move_target(self.mills, open_moves)
             self.selected_piece = self.selected_piece.position
+            print(f"Computer moving piece from {self.selected_piece} to {target_cell}")
             self.move_piece(target_cell[0], target_cell[1])
             self.selected_piece = None
             if self.is_mill_formed(target_cell[0], target_cell[1]):
