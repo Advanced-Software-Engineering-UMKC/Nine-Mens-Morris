@@ -13,16 +13,19 @@ class GameGUI:
         self.screen = pg.display.set_mode((WIN_SIZE, WIN_SIZE + self.info_height))
         self.clock = pg.time.Clock()
         # window title
+        
+        self.font = pg.font.Font(None, 34)
+        self.title_font = pg.font.Font(None, 48)
 
     def finish_init(self, size, pieces):
         cap = "-Mens-Morris"
         if pieces == 6:
-            cap = "Six" + cap
+            self.title = "Six"
         elif pieces == 9:
-            cap = "Nine" + cap
+            self.title = "Nine"
         else:
-            cap = "Twelve" + cap
-        pg.display.set_caption(cap)
+            self.title = "Twelve"
+        pg.display.set_caption(self.title + cap)
         self.board_size = size
         self.total_pieces = pieces
         self.game_manager = GameManager(self.board_size, self.total_pieces)
@@ -58,9 +61,7 @@ class GameGUI:
                         return
 
     def start_screen(self):
-        self.font = pg.font.Font(None, 34)
-        self.title_font = pg.font.Font(None, 48)
-        title_text = self.title_font.render("Nine Mens Morris", True, (255, 255, 255))
+        title_text = self.title_font.render(self.title + " Mens Morris", True, (255, 255, 255))
         human_text = self.font.render("Press 1 for Human", True, (255, 255, 255))
         computer_text = self.font.render("Press 2 for Computer", True, (255, 255, 255))
 
@@ -97,8 +98,8 @@ class GameGUI:
                 self.board_gui.get_cell_clicked()
 
     def run_game(self):
-        self.start_screen()
         self.game_picker_screen()
+        self.start_screen()
         self.board_gui.build_board()
 
         while True:
