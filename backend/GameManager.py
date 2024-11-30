@@ -274,16 +274,27 @@ class GameManager:
         return True
 
     def remove_opponent_piece(self):
-        opponent_turn = self.get_opponent().get_color()
-
         # Get all opponent's pieces
-        opponent_pieces = [
-            (row, col) for (row, col), piece_turn in self.board.pieces_on_board.items()
-            if piece_turn == opponent_turn
-        ]
+        opponent_pieces = self.get_opponent().get_placed_pieces_position()
+        # opponent_pieces = [
+        #     (row, col) for (row, col), piece_turn in self.board.pieces_on_board.items()
+        #     if piece_turn == opponent_turn
+        # ]
 
         # Try to remove non-mill pieces first - logic is wrong but it works as user select write piece
         opponent_pieces_non_mill = [(row, col) for row, col in opponent_pieces if not self.does_opp_mill_exist(row, col)]
+
+        # set self.removable_pieces to opponent_pieces_non_mill if its not empty else opponent_pieces
+        self.removable_pieces = opponent_pieces_non_mill if opponent_pieces_non_mill else opponent_pieces
+
+        if self.use_computer_opponent and self.player_2.color == self.turn:
+            piece_to_remove = self.player_2.decide_piece_to_remove(self.removable_pieces, self.board, self.mills)
+            self.board.remove_piece(piece_to_remove[0], piece_to_remove[1])
+            self.player_1.remove_piece(piece_to_remove[0], piece_to_remove[1])
+            self.open_moves.append((piece_to_remove[0], piece_to_remove[1]))
+            self.board.set_position(piece_to_remove[0], piece_to_remove[1], Color.EMPTY)
+            self.removable_pieces = []
+            return True
 
         if opponent_pieces_non_mill:
             print('Select a piece to remove from these non-mill options: ', opponent_pieces_non_mill)
@@ -300,6 +311,7 @@ class GameManager:
 
         if opponent_pieces:
             print('you can only select non mill peices sice opponent has it...')
+        
 
         return False
 
@@ -314,8 +326,10 @@ class GameManager:
             # Check if the piece forms a mill
             if self.is_mill_formed(row, col):
                 print("Mill formed! Remove opponent's piece.")
-                if self.use_computer_opponent and self.get_turn() == Color.WHITE or not self.use_computer_opponent:
-                    self.remove_opponent_piece()
+                self.remove_opponent_piece()
+                # if self.use_computer_opponent and self.get_turn() == Color.WHITE or not self.use_computer_opponent:
+                #     self.remove_opponent_piece()
+                
 
             self.end_turn()
 

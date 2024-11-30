@@ -34,11 +34,12 @@ class Player:
     def remove_piece(self, row, col):
         for piece in self.pieces:
             if piece.get_position() == (row, col):
-                if self.color == Color.BLACK:
-                    print('Here')
                 self.pieces.remove(piece)
                 self.piece_index -= 1
                 break
 
     def get_color(self):
         return self.color
+    
+    def get_placed_pieces_position(self):
+        return [piece.get_position() for piece in self.pieces if piece.get_position() != (-1, -1)]

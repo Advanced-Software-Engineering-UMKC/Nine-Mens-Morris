@@ -58,3 +58,7 @@ class ComputerPlayer(Player):
             if valid_move in mill:
                 return valid_move
         return None
+    
+    def decide_piece_to_remove(self, opponent_pieces, board, mills):
+        random_piece = random.choice(opponent_pieces)
+        return random_piece

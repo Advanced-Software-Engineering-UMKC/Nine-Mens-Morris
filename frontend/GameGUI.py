@@ -16,10 +16,11 @@ class GameGUI:
         pg.display.set_caption("Nine-Mens-Morris")
         self.board_size = 7
         self.total_pieces = 9
-        self.gameManager = GameManager(self.board_size, self.total_pieces)
-        self.board = BoardGUI(
-            self, WIN_SIZE, self.board_size, self.total_pieces, self.gameManager
+        self.game_manager = GameManager(self.board_size, self.total_pieces)
+        self.board_gui = BoardGUI(
+            self, WIN_SIZE, self.board_size, self.game_manager
         )
+
 
     def start_screen(self):
         font = pg.font.Font(None, 34)
@@ -45,7 +46,7 @@ class GameGUI:
                         return
                     elif event.key == pg.K_2:
                         self.use_computer_opponent = True
-                        self.gameManager.set_use_computer_opponent(self.use_computer_opponent)
+                        self.game_manager.set_use_computer_opponent(self.use_computer_opponent)
                         return
 
     def check_events(self):
@@ -58,32 +59,34 @@ class GameGUI:
             # Check for mouse click events
             elif event.type == pg.MOUSEBUTTONDOWN:
                 # Only run get_cell_clicked when a mouse button is clicked
-                self.board.get_cell_clicked()
+                self.board_gui.get_cell_clicked()
 
     def run_game(self):
         self.start_screen()
-        self.board.build_board()
+        self.board_gui.build_board()
 
         while True:
             self.check_events()
             self.draw_info()
             pg.display.update()
             self.clock.tick(60)
-            if self.use_computer_opponent and self.gameManager.turn == Color.BLACK:
-                self.board.handle_computer_move()
+            if self.use_computer_opponent and self.game_manager.turn == Color.BLACK:
+                self.board_gui.handle_computer_move()
+                pg.display.update()
+
 
     def draw_info(self):
         font = pg.font.Font(None, 36)
         turn_text = font.render(
-            f"Turn: {self.gameManager.turn.name}", True, (255, 255, 255)
+            f"Turn: {self.game_manager.turn.name}", True, (255, 255, 255)
         )
         white_pieces_text = font.render(
-            f"White Pieces Left: {self.gameManager.get_pieces_left()['white']}", 
+            f"White Pieces Left: {self.game_manager.get_pieces_left()['white']}", 
             True,
             (255, 255, 255),
         )
         black_pieces_text = font.render(
-            f"Black Pieces Left: {self.gameManager.get_pieces_left()['black']}",
+            f"Black Pieces Left: {self.game_manager.get_pieces_left()['black']}",
             True,
             (255, 255, 255),
         )

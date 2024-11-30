@@ -8,8 +8,8 @@ def game_fixture():
     pg.init()
     pg.display.set_mode((640, 480))
     game = GameGUI()
-    game.board = MagicMock()
-    game.board.build_board = MagicMock()
+    game.board_gui = MagicMock()
+    game.board_gui.build_board = MagicMock()
     
     yield game
     pg.quit()

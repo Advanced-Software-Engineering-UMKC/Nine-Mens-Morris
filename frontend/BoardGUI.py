@@ -9,7 +9,7 @@ vec2 = pg.math.Vector2
 
 
 class BoardGUI:
-    def __init__(self, game, WIN_SIZE, board_size, total_pieces, gameManager):
+    def __init__(self, game, WIN_SIZE, board_size, game_manager):
         self.game = game
         self.board_image = self.get_scaled_image(
             "resources/board/board.png", [WIN_SIZE] * 2
@@ -21,10 +21,12 @@ class BoardGUI:
         self.white_piece_image = self.get_scaled_image(
             "resources/pieces/white_piece.png", [self.cell_size] * 2
         )
-        self.game_manager = gameManager
-        self.board = gameManager.board
+        self.game_manager = None
+        self.board = None
         self.count = 0
         self.win_size = WIN_SIZE
+        self.game_manager = game_manager
+        self.board = game_manager.board
 
     def draw_board(self):
         self.game.screen.blit(self.board_image, (0, 0))
@@ -47,7 +49,7 @@ class BoardGUI:
         else:
             self.game.screen.blit(self.white_piece_image, position)
 
-    def handle_mill(self,row, col):
+    def remove_piece_from_board(self,row, col):
         if (row, col) in self.game_manager.removable_pieces:
             # THIS IS A TEMPORARY PATCH. PLEASE DEBUG NEXT SPRINT
             self.game_manager.end_turn()
@@ -117,7 +119,7 @@ class BoardGUI:
         # Handle opponent's piece removal if mill is formed
         if self.game_manager.waiting_for_removal:
             if mouse_buttons[0]:
-                self.handle_mill(row , col)
+                self.remove_piece_from_board(row , col)
             return current_cell
 
         # Left click - Select or move piece
@@ -151,5 +153,9 @@ class BoardGUI:
         time.sleep(0.3)
         self.draw_board()
         if self.game_manager.placement_complete():
+            if self.game_manager.check_game_over():
+                    print('Game Over winner is',self.game_manager.check_game_over())
+                    sys.exit()
             self.game_manager.end_turn()
+
 
