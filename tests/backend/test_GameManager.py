@@ -1,5 +1,4 @@
 import os
-
 import pytest
 
 from backend.GameManager import *

@@ -1,7 +1,8 @@
+import os
 import pytest
 
 from backend.Cell import Color
-from backend.GameManager import GameManager
+from backend.GameManager import GameManager, history_path
 
 @pytest.fixture
 def setup_board():
@@ -43,6 +44,8 @@ class TestGameOver:
         # And the black piece player has won
         assert result == Color.BLACK
 
+        game_manager.delete_history_file(history_path)
+
     def test_black_no_moves(self, setup_board):
         # Given an ongoing game with a complete piece placement phase
         game_manager = setup_board
@@ -72,6 +75,8 @@ class TestGameOver:
 
         # And the white piece player has won
         assert result == Color.WHITE
+
+        game_manager.delete_history_file(history_path)
 
     def test_white_too_few_pieces(self, setup_board):
         # Given an ongoing game with a complete piece placement phase
@@ -109,6 +114,8 @@ class TestGameOver:
         # And the black piece player has won    
         assert result == Color.BLACK
 
+        game_manager.delete_history_file(history_path)
+
     def test_black_too_few_pieces(self, setup_board):
         # Given an ongoing game with a complete piece placement phase
         game_manager = setup_board
@@ -145,6 +152,8 @@ class TestGameOver:
 
         # And the white piece player has won    
         assert result == Color.WHITE
+
+        game_manager.delete_history_file(history_path)
         
     def test_place_white_game_over(self, setup_board):
         # Given an ongoing game in the piece placement phase
@@ -240,3 +249,45 @@ class TestGameOver:
 
         # And the turn is changed to black
         assert game_manager.get_turn() == Color.BLACK
+
+
+    def test_game_history_file_creation(self, setup_board):
+        # Given an ongoing game with a complete piece placement phase
+        game_manager = setup_board
+        game_manager.place_piece(0,0)
+        game_manager.place_piece(3,0)
+        game_manager.place_piece(0,3)
+        game_manager.place_piece(1,1)
+        game_manager.end_turn()
+        game_manager.place_piece(1,3)
+        game_manager.place_piece(3,1)
+        game_manager.place_piece(6,0)
+        game_manager.place_piece(0,6)
+        game_manager.end_turn()
+
+        # And it's white's turn
+        assert game_manager.get_turn() == Color.WHITE
+
+        # When none of the white pieces can move
+        assert len(game_manager.get_movable_options(0,0)) == 0
+        assert len(game_manager.get_movable_options(3,0)) == 0
+        assert len(game_manager.get_movable_options(0,3)) == 0
+        assert len(game_manager.get_movable_options(1,1)) == 0
+
+        # history file yet not created
+        file_path = history_path + 'game_history_' + game_manager.id + '.json'
+        assert not os.path.exists(file_path)
+
+        # Then the game is over
+        result = game_manager.check_game_over()
+
+        # And the black piece player has won
+        assert result == Color.BLACK
+
+        # history file should exists now
+        assert os.path.exists(file_path)
+
+        # deleting history file
+        game_manager.delete_history_file(history_path)
+        assert not os.path.exists(file_path)
+
