@@ -155,10 +155,10 @@ class BoardGUI:
 
         return None
     
-    def replay_game(self, delay=1.0):
+    def replay_game(self, file_path, delay=1.0):
         """Replay the game using the history loaded from the JSON file."""
      
-        self.load_history(history_path)
+        self.load_history(file_path)
         
         for move in self.history:
             action = move["action"]

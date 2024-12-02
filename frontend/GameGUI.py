@@ -1,4 +1,5 @@
 import sys
+from tkinter import filedialog
 import pygame as pg
 from backend.GameManager import GameManager
 from frontend.BoardGUI import BoardGUI
@@ -62,7 +63,16 @@ class GameGUI:
                 if self.play:
                     self.board.get_cell_clicked()
                 else:
-                    self.board.replay_game()
+                    # Open the file chooser dialog
+                    file_path = filedialog.askopenfilename(
+                        title="Select a File",
+                        filetypes=[("Game History Files (*.json)", "*.json")]
+                    )
+
+                    # Check if a file was selected
+                    if file_path:
+                        self.board.replay_game(file_path)
+
 
     def run_game(self):
         self.show_start_screen()  # Show the initial screen to select play or replay
