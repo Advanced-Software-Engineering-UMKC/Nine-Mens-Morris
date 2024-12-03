@@ -1,0 +1,330 @@
+[
+    {
+        "action": "place",
+        "player": "WHITE",
+        "position": [
+            6,
+            0
+        ]
+    },
+    {
+        "action": "place",
+        "player": "BLACK",
+        "position": [
+            6,
+            3
+        ]
+    },
+    {
+        "action": "place",
+        "player": "WHITE",
+        "position": [
+            6,
+            6
+        ]
+    },
+    {
+        "action": "place",
+        "player": "BLACK",
+        "position": [
+            3,
+            6
+        ]
+    },
+    {
+        "action": "place",
+        "player": "WHITE",
+        "position": [
+            0,
+            6
+        ]
+    },
+    {
+        "action": "place",
+        "player": "BLACK",
+        "position": [
+            0,
+            3
+        ]
+    },
+    {
+        "action": "place",
+        "player": "WHITE",
+        "position": [
+            0,
+            0
+        ]
+    },
+    {
+        "action": "place",
+        "player": "BLACK",
+        "position": [
+            3,
+            0
+        ]
+    },
+    {
+        "action": "place",
+        "player": "WHITE",
+        "position": [
+            1,
+            1
+        ]
+    },
+    {
+        "action": "place",
+        "player": "BLACK",
+        "position": [
+            3,
+            1
+        ]
+    },
+    {
+        "action": "place",
+        "player": "WHITE",
+        "position": [
+            5,
+            1
+        ]
+    },
+    {
+        "action": "place",
+        "player": "BLACK",
+        "position": [
+            3,
+            2
+        ]
+    },
+    {
+        "action": "remove",
+        "player": "BLACK",
+        "position": [
+            1,
+            1
+        ]
+    },
+    {
+        "action": "place",
+        "player": "WHITE",
+        "position": [
+            1,
+            1
+        ]
+    },
+    {
+        "action": "place",
+        "player": "BLACK",
+        "position": [
+            5,
+            3
+        ]
+    },
+    {
+        "action": "place",
+        "player": "WHITE",
+        "position": [
+            5,
+            5
+        ]
+    },
+    {
+        "action": "place",
+        "player": "BLACK",
+        "position": [
+            4,
+            3
+        ]
+    },
+    {
+        "action": "remove",
+        "player": "BLACK",
+        "position": [
+            5,
+            5
+        ]
+    },
+    {
+        "action": "place",
+        "player": "WHITE",
+        "position": [
+            3,
+            5
+        ]
+    },
+    {
+        "action": "place",
+        "player": "BLACK",
+        "position": [
+            4,
+            2
+        ]
+    },
+    {
+        "action": "move",
+        "player": "WHITE",
+        "from_position": [
+            3,
+            5
+        ],
+        "to_position": [
+            3,
+            4
+        ]
+    },
+    {
+        "action": "move",
+        "player": "BLACK",
+        "from_position": [
+            4,
+            3
+        ],
+        "to_position": [
+            4,
+            4
+        ]
+    },
+    {
+        "action": "move",
+        "player": "WHITE",
+        "from_position": [
+            3,
+            4
+        ],
+        "to_position": [
+            2,
+            4
+        ]
+    },
+    {
+        "action": "move",
+        "player": "BLACK",
+        "from_position": [
+            5,
+            3
+        ],
+        "to_position": [
+            4,
+            3
+        ]
+    },
+    {
+        "action": "remove",
+        "player": "BLACK",
+        "position": [
+            2,
+            4
+        ]
+    },
+    {
+        "action": "move",
+        "player": "WHITE",
+        "from_position": [
+            5,
+            1
+        ],
+        "to_position": [
+            5,
+            3
+        ]
+    },
+    {
+        "action": "move",
+        "player": "BLACK",
+        "from_position": [
+            4,
+            4
+        ],
+        "to_position": [
+            3,
+            4
+        ]
+    },
+    {
+        "action": "move",
+        "player": "WHITE",
+        "from_position": [
+            5,
+            3
+        ],
+        "to_position": [
+            5,
+            5
+        ]
+    },
+    {
+        "action": "move",
+        "player": "BLACK",
+        "from_position": [
+            3,
+            4
+        ],
+        "to_position": [
+            4,
+            4
+        ]
+    },
+    {
+        "action": "remove",
+        "player": "BLACK",
+        "position": [
+            5,
+            5
+        ]
+    },
+    {
+        "action": "move",
+        "player": "WHITE",
+        "from_position": [
+            1,
+            1
+        ],
+        "to_position": [
+            1,
+            3
+        ]
+    },
+    {
+        "action": "move",
+        "player": "BLACK",
+        "from_position": [
+            4,
+            4
+        ],
+        "to_position": [
+            3,
+            4
+        ]
+    },
+    {
+        "action": "move",
+        "player": "WHITE",
+        "from_position": [
+            1,
+            3
+        ],
+        "to_position": [
+            1,
+            1
+        ]
+    },
+    {
+        "action": "move",
+        "player": "BLACK",
+        "from_position": [
+            3,
+            4
+        ],
+        "to_position": [
+            4,
+            4
+        ]
+    },
+    {
+        "action": "remove",
+        "player": "BLACK",
+        "position": [
+            1,
+            1
+        ]
+    }
+]

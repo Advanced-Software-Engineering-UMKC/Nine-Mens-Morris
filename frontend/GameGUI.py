@@ -23,7 +23,7 @@ class GameGUI:
         )
         self.play = True  # This will determine if the user plays a new game or replays
 
-    def show_start_screen(self):
+    def play_or_replay_menu(self):
         # Display a simple start screen for the user to choose play or replay
         font = pg.font.Font(None, 48)
         play_text = font.render("Press P to Play a New Game", True, (255, 255, 255))
@@ -52,7 +52,7 @@ class GameGUI:
                         return  # Exit the selection screen and start the replay
 
 
-    def start_screen(self):
+    def human_or_computer_menu(self):
         font = pg.font.Font(None, 34)
         title_font = pg.font.Font(None, 48)
         title_text = title_font.render("Nine Mens Morris", True, (255, 255, 255))
@@ -90,7 +90,7 @@ class GameGUI:
             elif event.type == pg.MOUSEBUTTONDOWN:
                 # Only run get_cell_clicked when a mouse button is clicked
                 if self.play:
-                    self.board.get_cell_clicked()
+                    self.board_gui.get_cell_clicked()
                 else:
                     # Open the file chooser dialog
                     file_path = filedialog.askopenfilename(
@@ -100,12 +100,16 @@ class GameGUI:
 
                     # Check if a file was selected
                     if file_path:
-                        self.board.replay_game(file_path)
+                        self.board_gui.replay_game(file_path)
 
 
     def run_game(self):
-        self.show_start_screen()  # Show the initial screen to select play or replay
-        self.board.build_board()
+        self.play_or_replay_menu()  # Show the initial screen to select play or replay
+        if self.play:
+            self.human_or_computer_menu()
+        else:
+            self.use_computer_opponent = False
+        self.board_gui.build_board()
 
         while True:
             self.check_events()
@@ -121,15 +125,15 @@ class GameGUI:
         if self.play:  # Only draw the info when in play mode
             font = pg.font.Font(None, 36)
             turn_text = font.render(
-                f"Turn: {self.gameManager.turn.name}", True, (255, 255, 255)
+                f"Turn: {self.game_manager.turn.name}", True, (255, 255, 255)
             )
             white_pieces_text = font.render(
-                f"White Pieces Left: {self.gameManager.get_pieces_left()['white']}", 
+                f"White Pieces Left: {self.game_manager.get_pieces_left()['white']}", 
                 True,
                 (255, 255, 255),
             )
             black_pieces_text = font.render(
-                f"Black Pieces Left: {self.gameManager.get_pieces_left()['black']}",
+                f"Black Pieces Left: {self.game_manager.get_pieces_left()['black']}",
                 True,
                 (255, 255, 255),
             )

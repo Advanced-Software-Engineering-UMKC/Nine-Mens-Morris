@@ -172,15 +172,15 @@ class BoardGUI:
             player = move["player"]
             if action == "place":
                 row, col = move["position"]
-                self.pieces_on_board[(row, col)] = Color.BLACK if player == "BLACK" else Color.WHITE
+                self.board.pieces_on_board[(row, col)] = Color.BLACK if player == "BLACK" else Color.WHITE
             elif action == "remove":
                 row, col = move["position"]
-                self.remove_piece(row, col)
+                self.board.remove_piece(row, col)
             elif action == "move":
                 from_row, from_col = move["from_position"]
                 to_row, to_col = move["to_position"]
-                self.remove_piece(from_row, from_col)
-                self.pieces_on_board[(to_row, to_col)] = Color.BLACK if player == "BLACK" else Color.WHITE
+                self.board.remove_piece(from_row, from_col)
+                self.board.pieces_on_board[(to_row, to_col)] = Color.BLACK if player == "BLACK" else Color.WHITE
 
             self.draw_board()
             pg.display.flip()
