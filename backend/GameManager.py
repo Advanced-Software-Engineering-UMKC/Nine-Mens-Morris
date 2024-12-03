@@ -1,12 +1,19 @@
 # import pygame as pg
+import uuid
+
 from backend.Board import Board
 from backend.Cell import Color
 from backend.Player import Player
 from backend.ComputerPlayer import ComputerPlayer
+import json
+import os
+
+history_path = 'resources/history/'  # change file name every time if want to record new game
 
 
 class GameManager:
     def __init__(self, size, pieces):
+        self.id = str(uuid.uuid4())
         self.board = Board(size)
         self.player_1 = Player(pieces, Color.WHITE)
         self.player_2 = Player(pieces, Color.BLACK)
@@ -16,6 +23,7 @@ class GameManager:
         self.selected_piece = None
         self.open_moves = self.board.get_valid_moves()
         self.use_computer_opponent = False
+        self.move_history = []
 
         # Mill variables
         self.mills = [
@@ -61,6 +69,12 @@ class GameManager:
             if self.board.check_position(row, column) != Color.EMPTY:
                 print(self.board.check_position(row, column))
                 return "GameManagerError -- position not empty"
+
+            self.move_history.append({
+                'action': 'place',
+                'player': self.turn.name,
+                'position': (row, column)
+            })
 
             is_piece_placed = 0
             current_player = self.get_current_player()
@@ -127,6 +141,7 @@ class GameManager:
 
         if self.placement_complete():
             if len(opponent.pieces) == 2:
+                self.save_history_to_json(history_path)
                 return self.turn
             current_player_pieces = current_player.pieces
 
@@ -139,12 +154,14 @@ class GameManager:
         else:
             return None
 
+        self.save_history_to_json(history_path)
         return self.get_opponent().get_color()
 
     '''
     the select_piece func should return the available empty adjacent positions to where the piece can be moved 
     or throw exception if it should be selectable
     '''
+
     def select_piece(self, row, col):
         if not self.placement_complete():
             raise Exception("SelectionError -- Cannot select pieces during placement phase")
@@ -171,6 +188,13 @@ class GameManager:
         if not self.can_fly(self.get_current_player()):
             if not self.is_adjacent_and_empty(start_row, start_col, target_row, target_col):
                 raise Exception("MoveError -- Invalid move, pieces can only move to adjacent positions")
+
+        self.move_history.append({
+            'action': 'move',
+            'player': self.turn.name,
+            'from_position': (start_row, start_col),
+            'to_position': (target_row, target_col)
+        })
 
         # Perform the move
         self.board.set_position(target_row, target_col, self.turn.name.lower())
@@ -211,13 +235,13 @@ class GameManager:
                 for r, c in mill:
                     piece_at_position = self.get_piece_at(r, c)  # Get the piece at the mill position
                     is_current_turn_piece = (
-                                piece_at_position.get_state().name == self.get_turn().name)  # Check if it's the current player's turn
+                            piece_at_position.get_state().name == self.get_turn().name)  # Check if it's the current player's turn
                     pieces_in_mill.append(is_current_turn_piece)  # Append the result (True/False) to the list
 
                 # Now use 'all' to check if all the values in the list are True
                 if all(pieces_in_mill):
                     return True
-        
+
         return False
 
     def does_opp_mill_exist(self, row, col):
@@ -231,13 +255,13 @@ class GameManager:
                 for r, c in mill:
                     piece_at_position = self.get_piece_at(r, c)  # Get the piece at the mill position
                     is_current_turn_piece = (
-                                piece_at_position.get_state().name == opponent_turn.name)  # Check if it's the current player's turn
+                            piece_at_position.get_state().name == opponent_turn.name)  # Check if it's the current player's turn
                     pieces_in_mill.append(is_current_turn_piece)  # Append the result (True/False) to the list
 
                 # Now use 'all' to check if all the values in the list are True
                 if all(pieces_in_mill):
                     return True
-        
+
         return False
 
     def remove_piece_mill(self, row, col):
@@ -246,6 +270,12 @@ class GameManager:
         opponent = self.get_opponent()
 
         opponent.remove_piece(row, col)
+
+        self.move_history.append({
+            'action': 'remove',
+            'player': self.turn.name,
+            'position': (row, col)}
+        )
 
         self.waiting_for_removal = False  # Reset the removal state
         self.removable_pieces = []  # Clear the list of removable pieces
@@ -262,7 +292,8 @@ class GameManager:
         # ]
 
         # Try to remove non-mill pieces first - logic is wrong but it works as user select write piece
-        opponent_pieces_non_mill = [(row, col) for row, col in opponent_pieces if not self.does_opp_mill_exist(row, col)]
+        opponent_pieces_non_mill = [(row, col) for row, col in opponent_pieces if
+                                    not self.does_opp_mill_exist(row, col)]
 
         # set self.removable_pieces to opponent_pieces_non_mill if its not empty else opponent_pieces
         self.removable_pieces = opponent_pieces_non_mill if opponent_pieces_non_mill else opponent_pieces
@@ -336,3 +367,19 @@ class GameManager:
         else:
             selected_piece = self.player_2.decide_piece_placement(self.open_moves, self.mills, self.board)
             self.handle_piece_placement(selected_piece[0], selected_piece[1])
+    def save_history_to_json(self, file_path):
+        # Ensure the directory exists
+        file_path = file_path + 'game_history_' + self.id + '.json'
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+        with open(file_path, 'w') as file:
+            json.dump(self.move_history, file, indent=4)
+
+        print(f"Game history saved to {file_path}")
+
+        return file_path
+
+    def delete_history_file(self, file_path):
+        file_path = file_path + 'game_history_' + self.id + '.json'
+        if os.path.exists(file_path):
+            os.remove(file_path)

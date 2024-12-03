@@ -1,12 +1,12 @@
 import pygame as pg
 import time
-
-
+import json
 from backend.Board import Board
 from backend.Cell import Color
 import sys
-vec2 = pg.math.Vector2 
 
+vec2 = pg.math.Vector2 
+history_path = '/Users/suryanshpatel/Projects/9mens morris Software enginnering/Nine-Mens-Morris/resources/history/game_history.json'
 
 class BoardGUI:
     def __init__(self, game, WIN_SIZE, board_size, game_manager):
@@ -27,6 +27,7 @@ class BoardGUI:
         self.win_size = WIN_SIZE
         self.game_manager = game_manager
         self.board = game_manager.board
+        self.history = []
 
     def draw_board(self):
         self.game.screen.blit(self.board_image, (0, 0))
@@ -61,8 +62,10 @@ class BoardGUI:
             if status:
                 print(f"Removed opponent's piece at ({row}, {col})")
                 # THIS IS A TEMPORARY PATCH. PLEASE DEBUG NEXT SPRINT
-                if self.game_manager.check_game_over():
-                    print('Game Over winner is',self.game_manager.check_game_over())
+                winner = self.game_manager.check_game_over()
+                
+                if winner:
+                    print('Game Over winner is',winner)
                     sys.exit()
                 self.game_manager.end_turn()
         else:
@@ -133,8 +136,9 @@ class BoardGUI:
                 # Movement phase
                 self.handle_moment_phase(row , col)
             
-            if self.game_manager.check_game_over():
-                print('Game Over winner is',self.game_manager.check_game_over())
+            winner = self.game_manager.check_game_over()
+            if winner:
+                print('Game Over winner is',winner)                  
                 sys.exit()
                 
 
@@ -157,3 +161,37 @@ class BoardGUI:
                     print('Game Over winner is',self.game_manager.check_game_over())
                     sys.exit()
 
+    
+    def replay_game(self, file_path, delay=1.0):
+        """Replay the game using the history loaded from the JSON file."""
+     
+        self.load_history(file_path)
+        
+        for move in self.history:
+            action = move["action"]
+            player = move["player"]
+            if action == "place":
+                row, col = move["position"]
+                self.pieces_on_board[(row, col)] = Color.BLACK if player == "BLACK" else Color.WHITE
+            elif action == "remove":
+                row, col = move["position"]
+                self.remove_piece(row, col)
+            elif action == "move":
+                from_row, from_col = move["from_position"]
+                to_row, to_col = move["to_position"]
+                self.remove_piece(from_row, from_col)
+                self.pieces_on_board[(to_row, to_col)] = Color.BLACK if player == "BLACK" else Color.WHITE
+
+            self.draw_board()
+            pg.display.flip()
+            time.sleep(delay)
+        
+        sys.exit(0)
+
+    
+    def load_history(self, file_path):
+        """Load the game history from a JSON file."""
+        with open(file_path, 'r') as file:
+            self.history = json.load(file)
+        print("History loaded successfully.")
+    

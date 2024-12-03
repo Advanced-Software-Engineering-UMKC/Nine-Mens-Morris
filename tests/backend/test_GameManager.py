@@ -1,3 +1,4 @@
+import os
 import pytest
 
 from backend.GameManager import *
@@ -117,3 +118,12 @@ class TestGameManager:
         game_manager.player_2.remove_piece(piece[0], piece[1])
 
         assert game_manager.check_game_over() is Color.WHITE
+
+        game_manager.delete_history_file(history_path)
+
+    def test_history_file_creation(self, game_manager):
+        saved_file_path = game_manager.save_history_to_json(history_path)
+        assert os.path.exists(saved_file_path)
+
+        game_manager.delete_history_file(history_path)
+        assert not os.path.exists(saved_file_path)
