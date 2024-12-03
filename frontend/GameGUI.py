@@ -22,6 +22,8 @@ class GameGUI:
             self, WIN_SIZE, self.board_size, self.game_manager
         )
         self.play = True  # This will determine if the user plays a new game or replays
+        self.font = pg.font.Font(None, 34)
+        self.title_font = pg.font.Font(None, 48)
 
     def play_or_replay_menu(self):
         # Display a simple start screen for the user to choose play or replay
@@ -51,8 +53,7 @@ class GameGUI:
                         self.play = False
                         return  # Exit the selection screen and start the replay
         
-        # self.font = pg.font.Font(None, 34)
-        # self.title_font = pg.font.Font(None, 48)
+
 
     def finish_init(self, size, pieces):
         cap = "-Mens-Morris"
@@ -149,10 +150,10 @@ class GameGUI:
 
 
     def run_game(self):
+        self.game_picker_screen()
         self.play_or_replay_menu()  # Show the initial screen to select play or replay
         if self.play:
             self.human_or_computer_menu()
-            self.game_picker_screen()
         else:
             self.use_computer_opponent = False
         self.board_gui.build_board()
