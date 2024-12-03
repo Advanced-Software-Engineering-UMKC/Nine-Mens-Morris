@@ -50,7 +50,52 @@ class GameGUI:
                     elif event.key == pg.K_r:
                         self.play = False
                         return  # Exit the selection screen and start the replay
+        
+        # self.font = pg.font.Font(None, 34)
+        # self.title_font = pg.font.Font(None, 48)
 
+    def finish_init(self, size, pieces):
+        cap = "-Mens-Morris"
+        if pieces == 6:
+            self.title = "Six"
+        elif pieces == 9:
+            self.title = "Nine"
+        else:
+            self.title = "Twelve"
+        pg.display.set_caption(self.title + cap)
+        self.board_size = size
+        self.total_pieces = pieces
+        self.game_manager = GameManager(self.board_size, self.total_pieces)
+        self.board_gui = BoardGUI(self, WIN_SIZE, self.board_size, self.game_manager)
+
+    def game_picker_screen(self):
+        title_text = self.font.render("Pick a Men's Morris game", True, (255, 255, 255))
+        six_text = self.font.render("Press 1 for Six", True, (255, 255, 255))
+        nine_text = self.font.render("Press 2 for Nine", True, (255, 255, 255))
+        twelve_text = self.font.render("Press 3 for Twelve", True, (255, 255, 255))
+
+        while True:
+            self.screen.fill((0, 0, 0))
+            self.screen.blit(title_text, (50, 50))
+            self.screen.blit(six_text, (50, 250))
+            self.screen.blit(nine_text, (50, 350))
+            self.screen.blit(twelve_text, (50, 450))
+            pg.display.update()
+
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
+                elif event.type == pg.KEYDOWN:
+                    if event.key == pg.K_1:
+                        self.finish_init(5, 6)
+                        return
+                    elif event.key == pg.K_2:
+                        self.finish_init(7, 9)
+                        return
+                    elif event.key == pg.K_3:
+                        self.finish_init(7, 12)
+                        return
 
     def human_or_computer_menu(self):
         font = pg.font.Font(None, 34)
@@ -107,6 +152,7 @@ class GameGUI:
         self.play_or_replay_menu()  # Show the initial screen to select play or replay
         if self.play:
             self.human_or_computer_menu()
+            self.game_picker_screen()
         else:
             self.use_computer_opponent = False
         self.board_gui.build_board()
