@@ -37,6 +37,7 @@ class BoardGUI:
         self.game_manager = game_manager
         self.board = game_manager.board
         self.history = []
+        self.game_over = False
 
     def draw_board(self):
         self.game.screen.blit(self.board_image, (0, 0))
@@ -74,9 +75,11 @@ class BoardGUI:
                 winner = self.game_manager.check_game_over()
                 
                 if winner:
-                    print('Game Over winner is',winner)
-                    sys.exit()
-                self.game_manager.end_turn()
+                    print('Game Over winner is',winner.name)
+                    self.game_over = True
+                    # sys.exit()
+                else:
+                    self.game_manager.end_turn()
         else:
             print(f"Invalid selection. Please select a piece from: {self.game_manager.removable_pieces}")
     
@@ -147,8 +150,9 @@ class BoardGUI:
             
             winner = self.game_manager.check_game_over()
             if winner:
-                print('Game Over winner is',winner)                  
-                sys.exit()
+                print('Game Over winner is',winner)    
+                self.game_over = True              
+                # sys.exit()
                 
 
         # Right click - Deselect piece
@@ -160,6 +164,9 @@ class BoardGUI:
         return None
     
     def handle_computer_move(self): 
+        if self.game_manager.check_game_over():
+            print('Game Over winner is',self.game_manager.check_game_over().name)
+            self.game_over = True
         if self.game_manager.waiting_for_removal:
             return
         self.game_manager.handle_computer_turn()
@@ -167,8 +174,9 @@ class BoardGUI:
         self.draw_board()
         if self.game_manager.placement_complete():
             if self.game_manager.check_game_over():
-                    print('Game Over winner is',self.game_manager.check_game_over())
-                    sys.exit()
+                    print('Game Over winner is',self.game_manager.check_game_over().name)
+                    self.game_over = True
+                    # sys.exit()
 
     
     def replay_game(self, file_path, delay=1.0):

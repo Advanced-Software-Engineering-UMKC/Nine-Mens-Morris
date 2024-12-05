@@ -375,7 +375,9 @@ class GameManager:
         self.player_2 = ComputerPlayer(self.player_2.starting_piece_count, Color.BLACK)
 
     def handle_computer_turn(self):
-        if self.placement_complete():
+        if self.check_game_over():
+            return
+        elif self.placement_complete():
             self.selected_piece, open_moves = self.player_2.decide_piece_to_move(self.mills, self.board, self.can_fly(self.get_current_player()))
             # while len(open_moves) == 0:
             #     self.selected_piece = self.player_2.decide_piece_to_move(self.mills, self.board)
@@ -393,6 +395,7 @@ class GameManager:
         else:
             selected_piece = self.player_2.decide_piece_placement(self.open_moves, self.mills, self.board)
             self.handle_piece_placement(selected_piece[0], selected_piece[1])
+            
     def save_history_to_json(self, file_path):
         # Ensure the directory exists
         file_path = file_path + 'game_history_' + self.id + '.json'
