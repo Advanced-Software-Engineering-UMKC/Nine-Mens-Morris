@@ -24,6 +24,7 @@ class GameManager:
         self.open_moves = self.board.get_valid_moves()
         self.use_computer_opponent = False
         self.move_history = []
+        self.saved = False
 
         # Mill variables
         self.mills = self.gen_mill_list()
@@ -167,7 +168,9 @@ class GameManager:
 
         if self.placement_complete():
             if len(opponent.pieces) == 2:
-                self.save_history_to_json(history_path)
+                if not self.saved:
+                    self.save_history_to_json(history_path)
+                    self.saved = True
                 return self.turn
             current_player_pieces = current_player.pieces
 
@@ -180,7 +183,9 @@ class GameManager:
         else:
             return None
 
-        self.save_history_to_json(history_path)
+        if not self.saved:
+            self.save_history_to_json(history_path)
+            self.saved = True
         return self.get_opponent().get_color()
 
     '''
@@ -375,7 +380,9 @@ class GameManager:
         self.player_2 = ComputerPlayer(self.player_2.starting_piece_count, Color.BLACK)
 
     def handle_computer_turn(self):
-        if self.placement_complete():
+        if self.check_game_over():
+            return
+        elif self.placement_complete():
             self.selected_piece, open_moves = self.player_2.decide_piece_to_move(self.mills, self.board, self.can_fly(self.get_current_player()))
             # while len(open_moves) == 0:
             #     self.selected_piece = self.player_2.decide_piece_to_move(self.mills, self.board)
@@ -393,6 +400,7 @@ class GameManager:
         else:
             selected_piece = self.player_2.decide_piece_placement(self.open_moves, self.mills, self.board)
             self.handle_piece_placement(selected_piece[0], selected_piece[1])
+            
     def save_history_to_json(self, file_path):
         # Ensure the directory exists
         file_path = file_path + 'game_history_' + self.id + '.json'

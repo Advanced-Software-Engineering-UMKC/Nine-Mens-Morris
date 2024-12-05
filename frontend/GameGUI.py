@@ -101,7 +101,7 @@ class GameGUI:
     def human_or_computer_menu(self):
         font = pg.font.Font(None, 34)
         title_font = pg.font.Font(None, 48)
-        title_text = title_font.render("Nine Mens Morris", True, (255, 255, 255))
+        title_text = title_font.render(self.title + " Men's Morris", True, (255, 255, 255))
         human_text = font.render("Press 1 for Human", True, (255, 255, 255))
         computer_text = font.render("Press 2 for Computer", True, (255, 255, 255))
 
@@ -124,6 +124,23 @@ class GameGUI:
                         self.use_computer_opponent = True
                         self.game_manager.set_use_computer_opponent(self.use_computer_opponent)
                         return
+                    
+    def end_screen(self, winner):
+        over_text = self.title_font.render("Game Over", True, (255, 255, 255))
+        winner_text = self.font.render(winner + " won!", True, (255, 255, 255))
+        quit_text = self.font.render("Press any button to quit...", True, (255, 255, 255))
+
+        self.screen.fill((0, 0, 0)) 
+        self.screen.blit(over_text, (50, 50))
+        self.screen.blit(winner_text, (50, 250))
+        self.screen.blit(quit_text, (50, 350))
+        pg.display.update()
+
+        while True:
+            for event in pg.event.get():
+                if event.type == pg.QUIT or event.type == pg.MOUSEBUTTONDOWN or event.type == pg.KEYDOWN:
+                    pg.quit()
+                    sys.exit()
 
     def check_events(self):
         # check for exit event and properly exit game
@@ -131,6 +148,9 @@ class GameGUI:
             if event.type == pg.QUIT:
                 pg.quit()
                 sys.exit()
+            
+            elif self.game_manager.check_game_over():
+                self.end_screen(self.game_manager.check_game_over().name)
 
             # Check for mouse click events
             elif event.type == pg.MOUSEBUTTONDOWN:
@@ -159,13 +179,16 @@ class GameGUI:
         self.board_gui.build_board()
 
         while True:
-            self.check_events()
-            self.draw_info()
-            pg.display.update()
-            self.clock.tick(60)
-            if self.use_computer_opponent and self.game_manager.turn == Color.BLACK:
-                self.board_gui.handle_computer_move()
+            if not self.board_gui.game_over:
+                self.check_events()
+                self.draw_info()
                 pg.display.update()
+                self.clock.tick(60)
+                if self.use_computer_opponent and self.game_manager.turn == Color.BLACK:
+                    self.board_gui.handle_computer_move()
+                    pg.display.update()
+            else:
+                self.end_screen(self.game_manager.check_game_over().name)
 
 
     def draw_info(self):

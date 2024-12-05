@@ -18,18 +18,30 @@ class ComputerPlayer(Player):
     def decide_piece_to_move(self, possible_mills, current_board, can_fly):
         # if piece is not in possible_mills then move it else random
         # we need to find the mills that have computer pieces in them, dont use pieces in these mills if we can
-        chosen_position = None
+        if len(self.pieces) == 0:
+            raise Exception("ComputerPlayerError -- Too few pieces")
+        
+        chosen_position = []
+        chosen_position_moves = []
+        chosen_index = -1
+
         for piece in self.pieces:
-            chosen_position = self.attempt_to_find_mill(possible_mills, [piece.position], current_board)
-            if chosen_position is not None:
-                open_moves = current_board.get_movable_options(chosen_position[0], chosen_position[1], can_fly)
-                if len(open_moves) > 0:
-                    chosen_position = piece
-                    return chosen_position, open_moves
-            else:
-                chosen_position = piece
-                open_moves = current_board.get_movable_options(piece.position[0], piece.position[1], can_fly)      
-        return chosen_position, open_moves
+            open_moves = current_board.get_movable_options(piece.get_position()[0], piece.get_position()[1], can_fly)     
+            new_position = self.attempt_to_find_mill(possible_mills, open_moves, current_board)
+            if new_position is not None:
+                return piece, [new_position]
+            
+            if len(open_moves) > 0:
+                chosen_position.append(piece)
+                chosen_position_moves.append(open_moves)
+        
+        if len(chosen_position) == 0 or len(chosen_position_moves) == 0:
+            return None, None
+        else:
+            chosen_index = random.randint(0, len(chosen_position)-1)
+        
+        # only want to return one position and its moveset
+        return chosen_position[chosen_index], chosen_position_moves[chosen_index]
     
     def share_no_values(self, array1, array2):
         set1 = set(array1)
