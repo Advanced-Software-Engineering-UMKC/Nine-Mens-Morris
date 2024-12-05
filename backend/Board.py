@@ -3,40 +3,16 @@ from backend.Cell import Cell, Color
 
 
 class Board:
-    def __init__(self, size):
-        self.board_size = size
-        self.create_initial_board(size)
-        self.adjacent_positions_map = {
-            # Outer square
-            (0, 0): [(0, 3), (3, 0)],
-            (0, 3): [(0, 0), (0, 6), (1, 3)],
-            (0, 6): [(0, 3), (3, 6)],
-            (3, 0): [(0, 0), (3, 1), (6, 0)],
-            (3, 6): [(0, 6), (3, 5), (6, 6)],
-            (6, 0): [(3, 0), (6, 3)],
-            (6, 3): [(6, 0), (6, 6), (5, 3)],
-            (6, 6): [(6, 3), (3, 6)],
-
-            # Middle square
-            (1, 1): [(1, 3), (3, 1)],
-            (1, 3): [(1, 1), (1, 5), (0, 3), (2, 3)],
-            (1, 5): [(1, 3), (3, 5)],
-            (3, 1): [(1, 1), (5, 1), (3, 0), (3, 2)],
-            (3, 5): [(1, 5), (5, 5), (3, 4), (3, 6)],
-            (5, 1): [(3, 1), (5, 3)],
-            (5, 3): [(5, 1), (5, 5), (6, 3), (4, 3)],
-            (5, 5): [(5, 3), (3, 5)],
-
-            # Inner square
-            (2, 2): [(2, 3), (3, 2)],
-            (2, 3): [(2, 2), (2, 4), (1, 3)],
-            (2, 4): [(2, 3), (3, 4)],
-            (3, 2): [(2, 2), (4, 2), (3, 1), (3, 3)],
-            (3, 4): [(2, 4), (4, 4), (3, 3), (3, 5)],
-            (4, 2): [(3, 2), (4, 3)],
-            (4, 3): [(4, 2), (4, 4), (5, 3)],
-            (4, 4): [(4, 3), (3, 4)]
+    def __init__(self, size, piece_count):
+        self.board_info = {
+            "type": piece_count,
+            "size": size,
+            "diagonals": True if piece_count == 12 else False,
+            "row_size": 2 if piece_count == 6 else 3
         }
+        self.create_initial_board(self.board_info["size"])
+        self.adjacent_positions_map = self.gen_adj_moves()
+        self.pieces_on_board = {}
 
     def create_initial_board(self, size):
         indices_array = []
@@ -54,23 +30,93 @@ class Board:
 
         return self.board
 
-    # is this valid movement for 6, 9, and 12?
-    def init_valid_moves(self, row):
-        rowMoves = []
-        middle = (self.board_size - 1) // 2
-        if row == middle:
-            i = 0
-            while i < self.board_size:
-                if i != middle:
-                    rowMoves.append(i)
-                i += 1
-        else:
-            dist = abs(row - middle)
-            for i in range(3):
-                offset = (i - 1) * dist
-                rowMoves.append(offset + middle)
-        return rowMoves
+    # determine the adjacent moves dynamically
+    def gen_adj_moves(self):
+        pos_map = {}
 
+        # intraconnections for squares (a1-d1-g1, e.g.)
+        for offset in range(self.board_info["row_size"], 0, -1):
+            ini = self.board_info["row_size"] - offset
+            sec = ini + offset
+            thi = ini + offset*2
+
+            pos_map[(ini, ini)] = [(ini, sec), (sec, ini)]
+            pos_map[(ini, sec)] = [(ini, ini), (ini, thi)]
+            pos_map[(ini, thi)] = [(ini, sec), (sec, thi)]
+
+            pos_map[(sec, ini)] = [(ini, ini), (thi, ini)]
+            pos_map[(sec, thi)] = [(ini, thi), (thi, thi)]
+
+            pos_map[(thi, ini)] = [(sec, ini), (thi, sec)]
+            pos_map[(thi, sec)] = [(thi, ini), (thi, thi)]
+            pos_map[(thi, thi)] = [(thi, sec), (sec, thi)]
+        
+        mid = self.board_info["row_size"]
+        
+        # "positive" interconnections for squares (a4-b4-c4, e.g.)
+        for inter in range(self.board_info["row_size"]-1):
+            pos_map[(mid, inter)].append((mid, inter+1))
+            pos_map[(mid, inter+1)].append((mid, inter))
+
+            pos_map[(inter, mid)].append((inter+1, mid))
+            pos_map[(inter+1, mid)].append((inter, mid))
+        
+        # "negative" interconnections for squares (g4-f4-e4, e.g.)
+        for inter in range(self.board_info["row_size"]-1, 0, -1):
+            fin = mid*2 - inter
+
+            pos_map[(mid, fin)].append((mid, fin+1))
+            pos_map[(mid, fin+1)].append((mid, fin))
+
+            pos_map[(fin, mid)].append((fin+1, mid))
+            pos_map[(fin+1, mid)].append((fin, mid))
+
+        # diagonals
+        if self.board_info["diagonals"]:
+            for inter in range(self.board_info["row_size"]-1):
+                fin = mid*2 - inter
+
+                pos_map[(inter, inter)].append((inter+1, inter+1))
+                pos_map[(inter+1, inter+1)].append((inter, inter))
+
+                pos_map[(fin, fin)].append((fin-1, fin-1))
+                pos_map[(fin-1, fin-1)].append((fin, fin))
+
+                pos_map[(inter, fin)].append((inter+1, fin-1))
+                pos_map[(inter+1, fin-1)].append((inter, fin))
+
+                pos_map[(fin, inter)].append((fin-1, inter+1))
+                pos_map[(fin-1, inter+1)].append((fin, inter))
+
+        return pos_map
+    
+    def init_valid_moves(self, row):
+        middle = (self.board_info["size"] - 1) // 2
+        if row == middle:
+            return self._get_middle_row_moves(middle)
+        else:
+            return self._get_non_middle_row_moves(row, middle)
+
+    def _get_middle_row_moves(self, middle):
+        row_moves = []
+        for cell in range(self.board_info["size"]):
+            if cell != middle:
+                row_moves.append(cell)
+        return row_moves
+
+    '''hmm, so the "magic number" 3 here represents the number valid spots in a row. 
+    that actually doesn't change depending on the board, except in the middle on 6, 
+    but the middle works fine and is in a separate function
+    
+    we can change this if you guys are concerned about it, but it's the same no matter the men's morris game. even 3 works this way'''
+    def _get_non_middle_row_moves(self, row, middle):
+        row_moves = []
+        dist = abs(row - middle)
+        for cell in range(3):
+            offset = (cell - 1) * dist
+            row_moves.append(offset + middle)
+        return row_moves
+    
     def set_valid_cells_to_empty(self):
         for index, row in enumerate(self.board):
             valid = self.init_valid_moves(index)
@@ -96,3 +142,29 @@ class Board:
 
     def get_cell(self, row, column):
         return self.board[row][column]
+    
+    def remove_piece(self, row, col):
+        # Remove the piece from the internal structure
+        if (row, col) in self.pieces_on_board:
+            del self.pieces_on_board[(row, col)]
+
+    
+    def find_empty_adjacents(self, row, col):
+        empty_adjacent_positions = []
+        all_adjacent_positions = self.adjacent_positions_map[(row, col)]
+
+        for row, col in all_adjacent_positions:
+            position_state = self.check_position(row, col)
+            if position_state == Color.EMPTY:
+                empty_adjacent_positions.append((row, col))
+
+        return empty_adjacent_positions
+    
+    def get_movable_options(self, row, col, can_fly):
+        # calculate the available adjacent positions
+        if can_fly:
+            # if can fly, return all open positions
+            return self.valid_moves
+        else:
+            # if more than 3 pieces left, user can only move to empty adjacent positions
+            return self.find_empty_adjacents(row, col)

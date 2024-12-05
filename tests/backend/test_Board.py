@@ -11,7 +11,7 @@ def board():
     """Fixture to create a Board instance."""
     # Initialize Pygame
     pg.init()
-    board = Board.Board(7)
+    board = Board.Board(7, 9)
     yield board
     pg.quit()
 
@@ -25,8 +25,8 @@ class TestBoard:
 
     def test_board_initialization(self, board):
         # Test if the board is initialized with the correct size
-        assert len(board.board) == board.board_size
-        assert all(len(row) == board.board_size for row in board.board)
+        assert len(board.board) == board.board_info["size"]
+        assert all(len(row) == board.board_info["size"] for row in board.board)
 
     def test_valid_moves_initialization(self, board):
         # Test if the valid moves are initialized properly

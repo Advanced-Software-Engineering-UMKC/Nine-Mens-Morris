@@ -1,7 +1,8 @@
+import os
 import pytest
 
 from backend.Cell import Color
-from backend.GameManager import GameManager
+from backend.GameManager import GameManager, history_path
 
 @pytest.fixture
 def setup_board():
@@ -32,16 +33,18 @@ class TestGameOver:
         assert game_manager.get_turn() == Color.WHITE
 
         # When none of the white pieces can move
-        assert len(game_manager.get_movable_options(0,0)) == 0
-        assert len(game_manager.get_movable_options(3,0)) == 0
-        assert len(game_manager.get_movable_options(0,3)) == 0
-        assert len(game_manager.get_movable_options(1,1)) == 0
+        assert len(game_manager.get_board().get_movable_options(0,0, False)) == 0
+        assert len(game_manager.get_board().get_movable_options(3,0, False)) == 0
+        assert len(game_manager.get_board().get_movable_options(0,3, False)) == 0
+        assert len(game_manager.get_board().get_movable_options(1,1, False)) == 0
 
         # Then the game is over
         result = game_manager.check_game_over()
 
         # And the black piece player has won
         assert result == Color.BLACK
+
+        game_manager.delete_history_file(history_path)
 
     def test_black_no_moves(self, setup_board):
         # Given an ongoing game with a complete piece placement phase
@@ -62,16 +65,18 @@ class TestGameOver:
         assert game_manager.get_turn() == Color.BLACK
 
         # When none of the black pieces can move
-        assert len(game_manager.get_movable_options(0,0)) == 0
-        assert len(game_manager.get_movable_options(3,0)) == 0
-        assert len(game_manager.get_movable_options(0,3)) == 0
-        assert len(game_manager.get_movable_options(1,1)) == 0
+        assert len(game_manager.get_board().get_movable_options(0,0, False)) == 0
+        assert len(game_manager.get_board().get_movable_options(3,0, False)) == 0
+        assert len(game_manager.get_board().get_movable_options(0,3, False)) == 0
+        assert len(game_manager.get_board().get_movable_options(1,1, False)) == 0
 
         # Then the game is over
         result = game_manager.check_game_over()
 
         # And the white piece player has won
         assert result == Color.WHITE
+
+        game_manager.delete_history_file(history_path)
 
     def test_white_too_few_pieces(self, setup_board):
         # Given an ongoing game with a complete piece placement phase
@@ -96,18 +101,20 @@ class TestGameOver:
         assert game_manager.is_mill_formed(3,4) == True
 
         # And a white piece is removed from the board
-        assert game_manager.remove_opponent_piece({(6,0):Color.WHITE,(6,3):Color.WHITE,(3,1):Color.WHITE,(3,6):Color.BLACK,(0,6):Color.BLACK,(3,5):Color.BLACK,(3,4):Color.BLACK}) == True
+        assert game_manager.remove_opponent_piece() == True
         game_manager.remove_piece_mill(6,3)
         assert game_manager.get_piece_at(6,3).get_state() == Color.EMPTY
 
         # And there are less than 3 white pieces remaining 
-        assert game_manager.pieces.count_white_remains < 3
+        assert len(game_manager.player_1.pieces) < 3
 
         # Then the game is over
         result = game_manager.check_game_over()
 
         # And the black piece player has won    
         assert result == Color.BLACK
+
+        game_manager.delete_history_file(history_path)
 
     def test_black_too_few_pieces(self, setup_board):
         # Given an ongoing game with a complete piece placement phase
@@ -133,18 +140,20 @@ class TestGameOver:
         assert game_manager.is_mill_formed(3,0) == True
 
         # And a black piece is removed from the board
-        assert game_manager.remove_opponent_piece({(0,0):Color.WHITE,(6,0):Color.WHITE,(6,3):Color.WHITE,(3,0):Color.WHITE,(0,6):Color.BLACK,(3,5):Color.BLACK,(3,4):Color.BLACK}) == True
+        assert game_manager.remove_opponent_piece() == True
         game_manager.remove_piece_mill(2,4)
         assert game_manager.get_piece_at(2,4).get_state() == Color.EMPTY
 
         # And there are less than 3 black pieces remaining 
-        assert game_manager.pieces.count_black_remains < 3
+        assert len(game_manager.player_2.pieces) < 3
 
         # Then the game is over
         result = game_manager.check_game_over()
 
         # And the white piece player has won    
         assert result == Color.WHITE
+
+        game_manager.delete_history_file(history_path)
         
     def test_place_white_game_over(self, setup_board):
         # Given an ongoing game in the piece placement phase
@@ -154,7 +163,7 @@ class TestGameOver:
         game_manager.place_piece(0,0)
 
         # And less than 3 white pieces have been placed
-        assert game_manager.pieces.count_white_placed < 3
+        assert len(game_manager.player_1.pieces) < 5
 
         # Then the game is not over
         assert game_manager.check_game_over() == None
@@ -168,7 +177,7 @@ class TestGameOver:
         game_manager.place_piece(0,0)
 
         # And less than 3 black pieces have been placed
-        assert game_manager.pieces.count_black_placed < 3
+        assert len(game_manager.player_2.pieces) < 5
 
         # Then the game is not over
         assert game_manager.check_game_over() == None
@@ -191,12 +200,12 @@ class TestGameOver:
         assert game_manager.is_mill_formed(0,6) == True
 
         # And a white piece is removed from the board
-        assert game_manager.remove_opponent_piece({(0,0):Color.WHITE,(3,0):Color.WHITE,(0,3):Color.WHITE,(0,6):Color.BLACK,(3,6):Color.BLACK,(6,6):Color.BLACK}) == True
+        assert game_manager.remove_opponent_piece() == True
         game_manager.remove_piece_mill(0,3)
         assert game_manager.get_piece_at(0,3).get_state() == Color.EMPTY
 
         # And less than 3 white pieces remain on the board
-        assert game_manager.pieces.count_white_remains < 3
+        assert len(game_manager.player_1.pieces) < 4
 
         # Then the game is not over
         assert game_manager.check_game_over() == None
@@ -226,12 +235,12 @@ class TestGameOver:
         assert game_manager.is_mill_formed(6,0) == True
 
         # And a black piece is removed from the board
-        assert game_manager.remove_opponent_piece({(0,0):Color.WHITE,(3,0):Color.WHITE,(0,3):Color.WHITE,(6,0):Color.WHITE,(3,5):Color.BLACK,(3,6):Color.BLACK,(6,6):Color.BLACK}) == True
+        assert game_manager.remove_opponent_piece() == True
         game_manager.remove_piece_mill(6,6)
         assert game_manager.get_piece_at(6,6).get_state() == Color.EMPTY
 
         # And less than 3 black pieces remain on the board
-        assert game_manager.pieces.count_black_remains < 3
+        assert len(game_manager.player_2.pieces) < 4
 
         # Then the game is not over
         assert game_manager.check_game_over() == None
@@ -240,3 +249,54 @@ class TestGameOver:
 
         # And the turn is changed to black
         assert game_manager.get_turn() == Color.BLACK
+
+
+    def test_game_history_file_creation(self, setup_board):
+        # Given an ongoing game with a complete piece placement phase
+        game_manager = setup_board
+        game_manager.place_piece(0,0)
+        game_manager.place_piece(3,0)
+        game_manager.place_piece(0,3)
+        game_manager.place_piece(1,1)
+        game_manager.end_turn()
+        game_manager.place_piece(1,3)
+        game_manager.place_piece(3,1)
+        game_manager.place_piece(6,0)
+        game_manager.place_piece(0,6)
+        game_manager.end_turn()
+
+        # history file yet not created
+        file_path = history_path + 'game_history_' + game_manager.id + '.json'
+        assert not os.path.exists(file_path)
+
+        # Then the game is over
+        result = game_manager.check_game_over()
+
+        # And the black piece player has won
+        assert result == Color.BLACK
+
+        # history file should exist now
+        assert os.path.exists(file_path)
+
+        # deleting history file
+        game_manager.delete_history_file(history_path)
+        assert not os.path.exists(file_path)
+
+    def test_no_history_file_for_incomplete_game(self, setup_board):
+        # Given an ongoing game with a complete piece placement phase
+        game_manager = setup_board
+        game_manager.place_piece(0,0)
+        game_manager.place_piece(3,0)
+        game_manager.place_piece(0,3)
+        game_manager.place_piece(1,1)
+        game_manager.end_turn()
+        game_manager.place_piece(1,3)
+        game_manager.place_piece(3,1)
+        game_manager.place_piece(6,0)
+        game_manager.place_piece(0,6)
+        game_manager.end_turn()
+
+        # history file yet not created
+        file_path = history_path + 'game_history_' + game_manager.id + '.json'
+        assert not os.path.exists(file_path)
+

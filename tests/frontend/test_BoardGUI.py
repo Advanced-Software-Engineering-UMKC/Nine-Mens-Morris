@@ -19,13 +19,13 @@ def board_gui_fixture():
     total_pieces = 16
     game_manager = GameManager(board_size, total_pieces)
 
-    board_gui = BoardGUI(mock_game, win_size, board_size, total_pieces, game_manager)
+    board_gui = BoardGUI(mock_game, win_size, board_size, game_manager)
     return board_gui, mock_game
 
 class TestBoardGUI:
     def test_initialization(self,board_gui_fixture):
         board_gui, _ = board_gui_fixture
-        assert board_gui.cell_size == board_gui.win_size // board_gui.board.board_size
+        assert board_gui.cell_size == board_gui.win_size // board_gui.board.board_info["size"]
         assert isinstance(board_gui.game_manager, GameManager)
         assert board_gui.count == 0
 
@@ -36,7 +36,7 @@ class TestBoardGUI:
         assert board_gui.white_piece_image is not None
 
         assert isinstance(board_gui.board, Board)
-        assert board_gui.board.board_size == 8  # hardecoded above
+        assert board_gui.board.board_info["size"] == 8  # hardecoded above
 
         assert isinstance(board_gui.game_manager, GameManager)
 

@@ -1,16 +1,27 @@
 import pygame as pg
-
+import time
+import json
 from backend.Board import Board
 from backend.Cell import Color
 import sys
-vec2 = pg.math.Vector2 
 
+vec2 = pg.math.Vector2 
+history_path = '/Users/suryanshpatel/Projects/9mens morris Software enginnering/Nine-Mens-Morris/resources/history/game_history.json'
 
 class BoardGUI:
-    def __init__(self, game, WIN_SIZE, board_size, total_pieces, gameManager):
+    def __init__(self, game, WIN_SIZE, board_size, game_manager):
         self.game = game
+
+        board_path = "resources/board/"
+        if game_manager.get_game_type() == 6:
+            board_path += "six_board.png"
+        elif game_manager.get_game_type() == 9:
+            board_path += "nine_board.png"
+        else:
+            board_path += "twelve_board.png"
+            
         self.board_image = self.get_scaled_image(
-            "resources/board/board.png", [WIN_SIZE] * 2
+            board_path, [WIN_SIZE] * 2
         )
         self.cell_size = WIN_SIZE // board_size
         self.black_piece_image = self.get_scaled_image(
@@ -19,16 +30,19 @@ class BoardGUI:
         self.white_piece_image = self.get_scaled_image(
             "resources/pieces/white_piece.png", [self.cell_size] * 2
         )
-        self.game_manager = gameManager
-        self.board = Board(board_size)
+        self.game_manager = None
+        self.board = None
         self.count = 0
         self.win_size = WIN_SIZE
-        self.pieces_on_board = {}
+        self.game_manager = game_manager
+        self.board = game_manager.board
+        self.history = []
+        self.game_over = False
 
     def draw_board(self):
         self.game.screen.blit(self.board_image, (0, 0))
         # Draw all pieces currently on the board
-        for position, turn in self.pieces_on_board.items():
+        for position, turn in self.board.pieces_on_board.items():
             self.draw_piece(turn, (position[1] * self.cell_size, position[0] * self.cell_size))
 
 
@@ -46,28 +60,27 @@ class BoardGUI:
         else:
             self.game.screen.blit(self.white_piece_image, position)
 
-    def remove_piece(self, row, col):
-        # Remove the piece from the internal structure
-        if (row, col) in self.pieces_on_board:
-            del self.pieces_on_board[(row, col)]
-
-    
-    def handle_mill(self,row, col):
+    def remove_piece_from_board(self,row, col):
         if (row, col) in self.game_manager.removable_pieces:
             # THIS IS A TEMPORARY PATCH. PLEASE DEBUG NEXT SPRINT
             self.game_manager.end_turn()
             # Valid piece selected to remove
             print(f"Removing opponent's piece at ({row}, {col})")
-            self.remove_piece(row, col)  # Remove the piece from the board
+            self.board.remove_piece(row, col)  # Remove the piece from the board
             self.draw_board()  # Redraw the board after removal
             status = self.game_manager.remove_piece_mill(row, col)
             if status:
                 print(f"Removed opponent's piece at ({row}, {col})")
                 # THIS IS A TEMPORARY PATCH. PLEASE DEBUG NEXT SPRINT
-                if self.game_manager.check_game_over():
-                    print('Game Over winner is',self.game_manager.check_game_over())
-                    sys.exit()
-                self.game_manager.end_turn()
+                winner = self.game_manager.check_game_over()
+                
+                if winner:
+                    if not self.game_over:
+                        print('Game Over winner is',winner.name)
+                    self.game_over = True
+                    # sys.exit()
+                else:
+                    self.game_manager.end_turn()
         else:
             print(f"Invalid selection. Please select a piece from: {self.game_manager.removable_pieces}")
     
@@ -91,17 +104,17 @@ class BoardGUI:
                 move_success = self.game_manager.move_piece(row, col)
                 if move_success:
                     print(f"Piece moved to ({row}, {col})")
-                    # Remove the piece from the old position
-                    self.remove_piece(selected_row, selected_col)
+                    # # Remove the piece from the old position
+                    # self.board.remove_piece(selected_row, selected_col)
 
-                    # Add the piece to the new position
-                    self.pieces_on_board[(row, col)] = self.game_manager.turn
+                    # # Add the piece to the new position
+                    # self.board.pieces_on_board[(row, col)] = self.game_manager.turn
                     self.draw_board()  # Redraw board to show updated pieces
 
                     # Check if the move forms a mill
                     if self.game_manager.is_mill_formed(row, col):
                         print("Mill formed! Remove opponent's piece.")
-                        self.game_manager.remove_opponent_piece(self.pieces_on_board)
+                        self.game_manager.remove_opponent_piece()
 
                     self.game_manager.end_turn()  # End turn after successful move
                 else:
@@ -122,23 +135,26 @@ class BoardGUI:
         # Handle opponent's piece removal if mill is formed
         if self.game_manager.waiting_for_removal:
             if mouse_buttons[0]:
-                self.handle_mill(row , col)
+                self.remove_piece_from_board(row , col)
             return current_cell
 
         # Left click - Select or move piece
         if mouse_buttons[0]:
             if not self.game_manager.placement_complete():
                 # Handle piece placement
-                self.game_manager.handle_piece_placement(row, col , self.pieces_on_board)
+                self.game_manager.handle_piece_placement(row, col)
                 self.draw_board()
                 return current_cell  # Return the current cell for left click
             else:
                 # Movement phase
                 self.handle_moment_phase(row , col)
             
-            if self.game_manager.check_game_over():
-                print('Game Over winner is',self.game_manager.check_game_over())
-                sys.exit()
+            winner = self.game_manager.check_game_over()
+            if winner:
+                if not self.game_over:
+                    print('Game Over winner is',winner.name)    
+                self.game_over = True              
+                # sys.exit()
                 
 
         # Right click - Deselect piece
@@ -148,6 +164,55 @@ class BoardGUI:
                 self.game_manager.selected_piece = None
 
         return None
+    
+    def handle_computer_move(self): 
+        if self.game_manager.check_game_over():
+            if not self.game_over:
+                print('Game Over winner is',self.game_manager.check_game_over().name)
+            self.game_over = True
+        if self.game_manager.waiting_for_removal:
+            return
+        self.game_manager.handle_computer_turn()
+        time.sleep(0.3)
+        self.draw_board()
+        if self.game_manager.placement_complete():
+            if self.game_manager.check_game_over():
+                    if not self.game_over:
+                        print('Game Over winner is',self.game_manager.check_game_over().name)
+                    self.game_over = True
+                    # sys.exit()
 
     
+    def replay_game(self, file_path, delay=1.0):
+        """Replay the game using the history loaded from the JSON file."""
+     
+        self.load_history(file_path)
+        
+        for move in self.history:
+            action = move["action"]
+            player = move["player"]
+            if action == "place":
+                row, col = move["position"]
+                self.board.pieces_on_board[(row, col)] = Color.BLACK if player == "BLACK" else Color.WHITE
+            elif action == "remove":
+                row, col = move["position"]
+                self.board.remove_piece(row, col)
+            elif action == "move":
+                from_row, from_col = move["from_position"]
+                to_row, to_col = move["to_position"]
+                self.board.remove_piece(from_row, from_col)
+                self.board.pieces_on_board[(to_row, to_col)] = Color.BLACK if player == "BLACK" else Color.WHITE
+
+            self.draw_board()
+            pg.display.flip()
+            time.sleep(delay)
+        
+        sys.exit(0)
+
+    
+    def load_history(self, file_path):
+        """Load the game history from a JSON file."""
+        with open(file_path, 'r') as file:
+            self.history = json.load(file)
+        print("History loaded successfully.")
     

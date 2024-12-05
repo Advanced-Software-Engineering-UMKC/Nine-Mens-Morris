@@ -1,3 +1,4 @@
+import os
 import pytest
 
 from backend.GameManager import *
@@ -91,14 +92,15 @@ class TestGameManager:
     def test_fly_piece(self, game_manager):
         # placing all 9 pieces for both players
         game_manager = place_test_pieces(game_manager)
-        assert not game_manager.can_fly(game_manager.turn)
+        assert not game_manager.can_fly(game_manager.player_2)
 
         # decreasing the black piece count to 3
         for i in range(6):
-            game_manager.pieces.decrease_black_piece_count()
+            piece = game_manager.player_2.get_placed_pieces_position()[0]
+            game_manager.player_2.remove_piece(piece[0], piece[1])
 
         game_manager.end_turn()
-        assert game_manager.can_fly(game_manager.turn)
+        assert game_manager.can_fly(game_manager.player_2)
 
     def test_end_game(self, game_manager):
         # placing all 9 pieces for both players
@@ -106,11 +108,22 @@ class TestGameManager:
 
         # decreasing the black piece count to 3
         for i in range(6):
-            game_manager.pieces.decrease_black_piece_count()
+            piece = game_manager.player_2.get_placed_pieces_position()[0]
+            game_manager.player_2.remove_piece(piece[0], piece[1])
 
         assert game_manager.check_game_over() is None
 
         # decreasing the black piece count to 2
-        game_manager.pieces.decrease_black_piece_count()
+        piece = game_manager.player_2.get_placed_pieces_position()[0]
+        game_manager.player_2.remove_piece(piece[0], piece[1])
 
         assert game_manager.check_game_over() is Color.WHITE
+
+        game_manager.delete_history_file(history_path)
+
+    def test_history_file_creation(self, game_manager):
+        saved_file_path = game_manager.save_history_to_json(history_path)
+        assert os.path.exists(saved_file_path)
+
+        game_manager.delete_history_file(history_path)
+        assert not os.path.exists(saved_file_path)
