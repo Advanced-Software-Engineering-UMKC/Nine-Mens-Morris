@@ -75,7 +75,8 @@ class BoardGUI:
                 winner = self.game_manager.check_game_over()
                 
                 if winner:
-                    print('Game Over winner is',winner.name)
+                    if not self.game_over:
+                        print('Game Over winner is',winner.name)
                     self.game_over = True
                     # sys.exit()
                 else:
@@ -150,7 +151,8 @@ class BoardGUI:
             
             winner = self.game_manager.check_game_over()
             if winner:
-                print('Game Over winner is',winner)    
+                if not self.game_over:
+                    print('Game Over winner is',winner.name)    
                 self.game_over = True              
                 # sys.exit()
                 
@@ -165,7 +167,8 @@ class BoardGUI:
     
     def handle_computer_move(self): 
         if self.game_manager.check_game_over():
-            print('Game Over winner is',self.game_manager.check_game_over().name)
+            if not self.game_over:
+                print('Game Over winner is',self.game_manager.check_game_over().name)
             self.game_over = True
         if self.game_manager.waiting_for_removal:
             return
@@ -174,7 +177,8 @@ class BoardGUI:
         self.draw_board()
         if self.game_manager.placement_complete():
             if self.game_manager.check_game_over():
-                    print('Game Over winner is',self.game_manager.check_game_over().name)
+                    if not self.game_over:
+                        print('Game Over winner is',self.game_manager.check_game_over().name)
                     self.game_over = True
                     # sys.exit()
 
