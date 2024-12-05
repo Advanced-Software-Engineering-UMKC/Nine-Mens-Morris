@@ -417,3 +417,67 @@ class GameManager:
         file_path = file_path + 'game_history_' + self.id + '.json'
         if os.path.exists(file_path):
             os.remove(file_path)
+
+    def load_history(self, file_path):
+        """Load the game history from a JSON file."""
+        if os.path.exists(file_path):
+            with open(file_path, 'r') as file:
+                return json.load(file)
+        return None
+
+    def validate_history_data(self, history_data):
+        # Define the expected keys for each action type
+        valid_structure = {
+            "place": {"required_keys": {"action", "player", "position"}, "optional_keys": set()},
+            "remove": {"required_keys": {"action", "player", "position"}, "optional_keys": set()},
+            "move": {"required_keys": {"action", "player", "from_position", "to_position"}, "optional_keys": set()},
+        }
+
+        try:
+            # Check if the root is an array
+            if not isinstance(history_data, list):
+                return False, "The root element is not an array."
+
+            if len(history_data) == 0:
+                return False, f"Empty history"
+
+            # Validate each object in the array
+            for obj in history_data:
+                if not isinstance(obj, dict):
+                    return False, "Array contains non-object elements."
+
+                # Check if 'action' is a valid key
+                action = obj.get("action")
+                if action not in valid_structure:
+                    return False, f"Invalid action '{action}' in object: {obj}"
+
+                # Validate required and optional keys
+                required_keys = valid_structure[action]["required_keys"]
+                optional_keys = valid_structure[action]["optional_keys"]
+                actual_keys = set(obj.keys())
+
+                missing_keys = required_keys - actual_keys
+                extra_keys = actual_keys - (required_keys | optional_keys)
+
+                if missing_keys:
+                    return False, f"Missing keys {missing_keys} in object: {obj}"
+                if extra_keys:
+                    return False, f"Unexpected keys {extra_keys} in object: {obj}"
+
+                # Validate the 'player' field
+                if obj["player"] not in {"WHITE", "BLACK"}:
+                    return False, f"Invalid player '{obj['player']}' in object: {obj}"
+
+                # Validate positions are lists of two integers
+                for key in {"position", "from_position", "to_position"} & actual_keys:
+                    if not (isinstance(obj[key], list) and len(obj[key]) == 2 and all(
+                            isinstance(x, int) for x in obj[key])):
+                        return False, f"Invalid format for {key} in object: {obj}"
+
+            # If all checks pass
+            return True, "JSON content is valid."
+
+        except json.JSONDecodeError as e:
+            return False, f"Invalid JSON format: {e}"
+        except Exception as e:
+            return False, f"An error occurred: {e}"

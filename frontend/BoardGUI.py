@@ -5,8 +5,9 @@ from backend.Board import Board
 from backend.Cell import Color
 import sys
 
-vec2 = pg.math.Vector2 
+vec2 = pg.math.Vector2
 history_path = '/Users/suryanshpatel/Projects/9mens morris Software enginnering/Nine-Mens-Morris/resources/history/game_history.json'
+
 
 class BoardGUI:
     def __init__(self, game, WIN_SIZE, board_size, game_manager):
@@ -19,7 +20,7 @@ class BoardGUI:
             board_path += "nine_board.png"
         else:
             board_path += "twelve_board.png"
-            
+
         self.board_image = self.get_scaled_image(
             board_path, [WIN_SIZE] * 2
         )
@@ -45,7 +46,6 @@ class BoardGUI:
         for position, turn in self.board.pieces_on_board.items():
             self.draw_piece(turn, (position[1] * self.cell_size, position[0] * self.cell_size))
 
-
     @staticmethod
     def get_scaled_image(path, resolution):
         image = pg.image.load(path)
@@ -60,7 +60,7 @@ class BoardGUI:
         else:
             self.game.screen.blit(self.white_piece_image, position)
 
-    def remove_piece_from_board(self,row, col):
+    def remove_piece_from_board(self, row, col):
         if (row, col) in self.game_manager.removable_pieces:
             # THIS IS A TEMPORARY PATCH. PLEASE DEBUG NEXT SPRINT
             self.game_manager.end_turn()
@@ -73,18 +73,18 @@ class BoardGUI:
                 print(f"Removed opponent's piece at ({row}, {col})")
                 # THIS IS A TEMPORARY PATCH. PLEASE DEBUG NEXT SPRINT
                 winner = self.game_manager.check_game_over()
-                
+
                 if winner:
                     if not self.game_over:
-                        print('Game Over winner is',winner.name)
+                        print('Game Over winner is', winner.name)
                     self.game_over = True
                     # sys.exit()
                 else:
                     self.game_manager.end_turn()
         else:
             print(f"Invalid selection. Please select a piece from: {self.game_manager.removable_pieces}")
-    
-    def handle_moment_phase(self,row, col):
+
+    def handle_moment_phase(self, row, col):
         if self.game_manager.selected_piece is None:
             # No piece selected, attempt to select a piece
             piece_at_cell = self.game_manager.get_piece_at(row, col)
@@ -124,8 +124,7 @@ class BoardGUI:
 
             # Clear the selected piece regardless of move success
             self.game_manager.selected_piece = None
-    
-    
+
     def get_cell_clicked(self):
         current_cell = vec2(pg.mouse.get_pos()) // self.cell_size
         col, row = map(int, current_cell)
@@ -135,7 +134,7 @@ class BoardGUI:
         # Handle opponent's piece removal if mill is formed
         if self.game_manager.waiting_for_removal:
             if mouse_buttons[0]:
-                self.remove_piece_from_board(row , col)
+                self.remove_piece_from_board(row, col)
             return current_cell
 
         # Left click - Select or move piece
@@ -147,15 +146,14 @@ class BoardGUI:
                 return current_cell  # Return the current cell for left click
             else:
                 # Movement phase
-                self.handle_moment_phase(row , col)
-            
+                self.handle_moment_phase(row, col)
+
             winner = self.game_manager.check_game_over()
             if winner:
                 if not self.game_over:
-                    print('Game Over winner is',winner.name)    
-                self.game_over = True              
+                    print('Game Over winner is', winner.name)
+                self.game_over = True
                 # sys.exit()
-                
 
         # Right click - Deselect piece
         if mouse_buttons[2]:
@@ -164,11 +162,11 @@ class BoardGUI:
                 self.game_manager.selected_piece = None
 
         return None
-    
-    def handle_computer_move(self): 
+
+    def handle_computer_move(self):
         if self.game_manager.check_game_over():
             if not self.game_over:
-                print('Game Over winner is',self.game_manager.check_game_over().name)
+                print('Game Over winner is', self.game_manager.check_game_over().name)
             self.game_over = True
         if self.game_manager.waiting_for_removal:
             return
@@ -177,17 +175,21 @@ class BoardGUI:
         self.draw_board()
         if self.game_manager.placement_complete():
             if self.game_manager.check_game_over():
-                    if not self.game_over:
-                        print('Game Over winner is',self.game_manager.check_game_over().name)
-                    self.game_over = True
-                    # sys.exit()
+                if not self.game_over:
+                    print('Game Over winner is', self.game_manager.check_game_over().name)
+                self.game_over = True
+                # sys.exit()
 
-    
     def replay_game(self, file_path, delay=1.0):
         """Replay the game using the history loaded from the JSON file."""
-     
-        self.load_history(file_path)
-        
+
+        self.history = self.game_manager.load_history(file_path)
+        is_valid, msg = self.game_manager.validate_history_data(self.history)
+        if is_valid:
+            print("History loaded successfully.")
+        else:
+            print(msg)
+
         for move in self.history:
             action = move["action"]
             player = move["player"]
@@ -206,13 +208,5 @@ class BoardGUI:
             self.draw_board()
             pg.display.flip()
             time.sleep(delay)
-        
-        sys.exit(0)
 
-    
-    def load_history(self, file_path):
-        """Load the game history from a JSON file."""
-        with open(file_path, 'r') as file:
-            self.history = json.load(file)
-        print("History loaded successfully.")
-    
+        sys.exit(0)
