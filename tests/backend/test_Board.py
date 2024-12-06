@@ -17,12 +17,6 @@ def board():
 
 
 class TestBoard:
-    # def test_add_tile(self, board):
-    #     """Test if add_tile method works correctly."""
-    #     board.add_tile()
-    #     assert board.game_over
-    #     assert board.won
-
     def test_board_initialization(self, board):
         # Test if the board is initialized with the correct size
         assert len(board.board) == board.board_info["size"]

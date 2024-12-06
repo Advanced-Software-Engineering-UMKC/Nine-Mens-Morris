@@ -31,7 +31,7 @@ class TestPieceFlight:
         assert game_manager.get_turn() == Color.WHITE
 
         # And white has exactly 3 pieces remaining
-        # ...
+        assert len(game_manager.player_1.pieces) == 3
 
         # When a white piece is moved to an empty cell
         game_manager.select_piece(0,0)
@@ -55,7 +55,7 @@ class TestPieceFlight:
         assert game_manager.get_turn() == Color.BLACK
 
         # And black has exactly 3 pieces remaining
-        # ...
+        assert len(game_manager.player_2.pieces) == 3
 
         # When a black piece is moved to an empty cell
         game_manager.select_piece(6,6)
