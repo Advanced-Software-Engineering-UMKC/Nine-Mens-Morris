@@ -1,13 +1,10 @@
 import pygame as pg
 import time
 import json
-from backend.Board import Board
 from backend.Cell import Color
 import sys
 
 vec2 = pg.math.Vector2
-history_path = '/Users/suryanshpatel/Projects/9mens morris Software enginnering/Nine-Mens-Morris/resources/history/game_history.json'
-
 
 class BoardGUI:
     def __init__(self, game, WIN_SIZE, board_size, game_manager):

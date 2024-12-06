@@ -104,11 +104,6 @@ class Board:
                 row_moves.append(cell)
         return row_moves
 
-    '''hmm, so the "magic number" 3 here represents the number valid spots in a row. 
-    that actually doesn't change depending on the board, except in the middle on 6, 
-    but the middle works fine and is in a separate function
-    
-    we can change this if you guys are concerned about it, but it's the same no matter the men's morris game. even 3 works this way'''
     def _get_non_middle_row_moves(self, row, middle):
         row_moves = []
         dist = abs(row - middle)

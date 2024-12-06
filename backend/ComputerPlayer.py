@@ -27,9 +27,9 @@ class ComputerPlayer(Player):
 
         for piece in self.pieces:
             open_moves = current_board.get_movable_options(piece.get_position()[0], piece.get_position()[1], can_fly)     
-            new_position = self.attempt_to_find_mill(possible_mills, open_moves, current_board)
-            if new_position is not None:
-                return piece, [new_position]
+            # new_position = self.attempt_to_find_mill(possible_mills, open_moves, current_board)
+            # if new_position is not None:
+            #     return piece, [new_position]
             
             if len(open_moves) > 0:
                 chosen_position.append(piece)
